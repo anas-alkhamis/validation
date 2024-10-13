@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>New Joiners</title>
+    <base href="/" />
+    <!--Polyfills-->
+    <script>
+      __runtime_public_path__ = {
+        cubes: '/packages/cubes/',
+        'new-joiners-training': '/',
+        'cubes-style': '/packages/cubes-style/',
+        'cubes-ui': '/packages/cubes-ui/',
+        'cubes-app': '/packages/cubes-app/',
+        'cubes-auth': '/packages/cubes-auth/',
+        Vue: '/packages/vue/',
+        VueRouter: '/packages/vue-router/'
+      }
+      if (typeof Promise === 'undefined') document.write('<script src="promise.min.js"><\/script>')
+      if (typeof fetch === 'undefined') document.write('<script src="fetch.umd.js"><\/script>')
+    </script>
+
+    <script type="systemjs-importmap" src="/packages.json"></script>
+    <script type="text/javascript" src="/loader.min.js"></script>
+  </head>
+
+  <body>
+    <div data-new-joiners-training-app></div>
+    <script>
+      var context = window
+      System.ready(['Vue', 'VueRouter'], ['cubes-style', 'cubes', 'cubes-ui', 'cubes-app', 'new-joiners-training'], [], function () {}, context)
+    </script>
+    <script type="text/javascript">
+      window.configure = function () {
+        return {
+          secure: true,
+          prodEnv: {
+            base: 'https://cubes.solutions/',
+            nsRoot: 'CubesDataManagement.UI'
+          },
+          //change this to the required layout to be used in the exported pdf.
+          pdfLayout: 'adeo',
+          disallowedExtensions: ['exe'],
+          folderTypes: [
+            {
+              id: 29,
+              name: { en: 'Measures', ar: 'المقاييس' },
+              subObjectsType: 29
+            },
+            {
+              id: 3,
+              name: { en: 'KPIs', ar: 'مؤشرات قياس الأداء' },
+              subObjectsType: 3
+            },
+            {
+              id: 82,
+              name: { en: 'Risks', ar: 'المخاطر' },
+              subObjectsType: 82
+            }
+          ],
+          appraisal: {
+            closeAppraisalModal: {
+              comments: { optional: true, show: true },
+              evidences: { optional: true, show: true }
+            },
+            metadata: {
+              // used to preview the classification in the appraisal details/card, use the classification ID in this field
+              classification: 57,
+              pillar: 76
+            }
+          },
+          themes: [
+            {
+              name: 'dark',
+              ui: {
+                icon: 'moon'
+              }
+            },
+            {
+              name: 'light',
+              ui: {
+                icon: 'sun'
+              }
+            }
+          ],
+          cultures: [
+            { id: 9, lang: 'en', locale: 'en-US', lcid: 1033, dir: 'ltr' },
+            { id: 1, lang: 'ar', locale: 'ar-AE', lcid: 14337, dir: 'rtl' }
+          ],
+          currencySymbol: { ar: 'د.إ', en: 'AED' },
+          social: {
+            facebook: 'https://www.facebook.com/sharer/sharer.php',
+            twitter: 'https://www.twitter.com/share',
+            linkedin: 'https://linkedin.com/shareArticle'
+          },
+          dashboardLib: {
+            network: {
+              shared: {
+                baseURL: 'https://cubes-solutions.com/CubesDev/',
+                api: '/api/v2'
+              }
+            }
+          },
+          network: {
+            shared: {
+              baseURL: 'https://cubes-solutions.com',
+              api: '/AppraisalsDev/Appraisal/api',
+              maxCachedRequests: 10
+            },
+            objectsBrowser: {
+              baseURL: 'https://cubes-solutions.com/CubesDev',
+              api: '/api'
+            },
+            foldersBrowser: {
+              baseURL: 'https://cubes-solutions.com/CubesDev',
+              api: '/api'
+            },
+            pdf: {
+              baseURL: 'https://cubes-solutions.com/CubesDev',
+              api: '/api/v2'
+            },
+            appraisalsApi: {
+              baseURL: 'https://cubes-solutions.com',
+              api: '/AppraisalsDev/Appraisal/api',
+              maxCachedRequests: 10
+            },
+            security: {
+              baseURL: 'https://cubes-solutions.com/CubesDev',
+              api: '/api/v2'
+            },
+            auth: {
+              mode: 'cubes',
+              pkceURL: 'https://cubes.solutions/CubesAppraisals.UI',
+              baseURL: 'https://cubes-solutions.com/CubesDev',
+              authRelayUri: 'https://cubes.solutions/CubesAppraisals.UI/Content/packages/cubes-ui@2.9.3/auth-relay.html',
+              api: '/api',
+              clientId: 'cubes',
+              tokenEndpoint: '/Auth/Token',
+              logoutEndpoint: '/LogoutPage.aspx',
+              userInfoEndpoint: '/Auth/User',
+              authorizeEndpoint: '/Auth/Authorize',
+              externalLoginsEndpoint: '/Account/ExternalLogins',
+              profilePictureEndpoint: '/user/profile/picture'
+            }
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
