@@ -24,11 +24,11 @@
       if (typeof Promise === 'undefined') document.write('<script src="promise.min.js"><\/script>')
       if (typeof fetch === 'undefined') document.write('<script src="fetch.umd.js"><\/script>')
     </script>
-
+ 
     <script type="systemjs-importmap" src="/packages.json"></script>
     <script type="text/javascript" src="/loader.min.js"></script>
   </head>
-
+ 
   <body>
     <div data-new-joiners-training-app></div>
     <script>
@@ -72,6 +72,93 @@
               // used to preview the classification in the appraisal details/card, use the classification ID in this field
               classification: 57,
               pillar: 76
+            },
+            auditLogSchema: {
+              '1090ec62-7ccd-42cf-8920-7eefa1ab1d70': {
+                typeId: '1090ec62-7ccd-42cf-8920-7eefa1ab1d70',
+                name: 'ApplicationInstance',
+                properties: {
+                  'c16050c4-a528-4cb9-924a-7ea62ccde2ca': {
+                    typeId: 'c16050c4-a528-4cb9-924a-7ea62ccde2ca',
+                    name: {
+                      en: 'Status',
+                      ar: 'الحالة'
+                    }
+                  },
+                  '942c095f-c6ca-4b19-a347-d2629fa6bc1f': {
+                    typeId: '942c095f-c6ca-4b19-a347-d2629fa6bc1f',
+                    name: {
+                      en: 'Individual Objectives',
+                      ar: 'الأهداف الفردية'
+                    }
+                  },
+                  '42d8100e-44d1-4c01-b947-3cf5c966f90e': {
+                    typeId: '42d8100e-44d1-4c01-b947-3cf5c966f90e',
+                    name: {
+                      en: 'Individual Objectives Ratings',
+                      ar: 'تقييم الأهداف الفردية'
+                    }
+                  },
+                  'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f': {
+                    typeId: 'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f',
+                    name: {
+                      en: 'Competencies Ratings',
+                      ar: 'تقييم الكفاءات'
+                    }
+                  }
+                }
+              },
+ 
+              'b0a86026-49da-4457-bb4a-9b6bb8e3ec50': {
+                typeId: 'b0a86026-49da-4457-bb4a-9b6bb8e3ec50',
+                name: 'Objective',
+                properties: {
+                  '5984da27-ab4a-4cca-8cd0-5ef601fd86dc': {
+                    en: 'Name',
+                    ar: 'الاسم'
+                  },
+                  '35af1a75-1656-400f-a198-c5fd5b5e50f1': {
+                    en: 'Kpi description',
+                    ar: 'وصف مؤشر قياس الأداء'
+                  },
+                  '9b8ea9f7-b424-4d1a-9485-209aeb067998': {
+                    en: 'Target Date',
+                    ar: 'التاريخ المستهدف'
+                  },
+                  '41293d4d-eed3-405d-a0fd-8cc4eeb47fdb': {
+                    en: 'Weight',
+                    ar: 'الوزن'
+                  }
+                }
+              },
+              'fbc95025-4f68-466d-9bb1-520ced57fd24': {
+                typeId: 'fbc95025-4f68-466d-9bb1-520ced57fd24',
+                name: 'CompetencyRating',
+                properties: {
+                  '32fd8e20-45a1-4520-9554-3baa22b33654': {
+                    en: 'Self Rating',
+                    ar: 'التقييم الذاتي'
+                  },
+                  'a5ac6d0a-682f-4420-aa24-1429ed87f105': {
+                    en: 'Manager Rating',
+                    ar: 'تقييم المدير'
+                  }
+                }
+              },
+              '93323715-1133-49b1-a193-ffe82d7b37d9': {
+                typeId: '93323715-1133-49b1-a193-ffe82d7b37d9',
+                name: 'ObjectiveRating',
+                properties: {
+                  '6d18a5e8-f778-491c-bbc2-8552a21ffeff': {
+                    en: 'Self Rating',
+                    ar: 'التقييم الذاتي'
+                  },
+                  '35e42de0-69c6-489a-b819-d02d223f5f92': {
+                    en: 'Manager Rating',
+                    ar: 'تقييم المدير'
+                  }
+                }
+              }
             }
           },
           themes: [
@@ -109,7 +196,7 @@
           network: {
             shared: {
               baseURL: 'https://cubes-solutions.com',
-              api: '/AppraisalsDev/Appraisal/api',
+              api: '/PreAppraisals/Appraisal/api',
               maxCachedRequests: 10
             },
             objectsBrowser: {
@@ -126,7 +213,12 @@
             },
             appraisalsApi: {
               baseURL: 'https://cubes-solutions.com',
-              api: '/AppraisalsDev/Appraisal/api',
+              api: '/PreAppraisals/Appraisal/api',
+              maxCachedRequests: 10
+            },
+            appraisalsSecurityApi: {
+              baseURL: 'https://cubes-solutions.com',
+              api: '/Appraisals/SecurityAPI/api',
               maxCachedRequests: 10
             },
             security: {
@@ -134,18 +226,29 @@
               api: '/api/v2'
             },
             auth: {
-              mode: 'cubes',
-              pkceURL: 'https://cubes.solutions/CubesAppraisals.UI',
-              baseURL: 'https://cubes-solutions.com/CubesDev',
-              authRelayUri: 'https://cubes.solutions/CubesAppraisals.UI/Content/packages/cubes-ui@2.9.3/auth-relay.html',
+              mode: 'id4',
+              baseURL: 'https://cubes-solutions.com/Appraisals/IdentityServerLocal',
+              authRelayUri: 'https://localhost.cubes.solutions:8080/packages/cubes-ui/auth-relay.html',
               api: '/api',
               clientId: 'cubes',
-              tokenEndpoint: '/Auth/Token',
-              logoutEndpoint: '/LogoutPage.aspx',
-              userInfoEndpoint: '/Auth/User',
-              authorizeEndpoint: '/Auth/Authorize',
-              externalLoginsEndpoint: '/Account/ExternalLogins',
+              tokenEndpoint: '/connect/token',
+              logoutEndpoint: '/auth/logout',
+              userInfoEndpoint: '/user/profile',
+              authorizeEndpoint: '/auth/authorize',
+              externalLoginsEndpoint: '/auth/externalLogins',
               profilePictureEndpoint: '/user/profile/picture'
+              // mode: 'cubes',
+              // pkceURL: 'https://cubes.solutions/CubesAppraisals.UI',
+              // baseURL: 'https://cubes-solutions.com/CubesDev',
+              // authRelayUri: 'https://cubes.solutions/CubesAppraisals.UI/Content/packages/cubes-ui@2.9.3/auth-relay.html',
+              // api: '/api',
+              // clientId: 'cubes',
+              // tokenEndpoint: '/Auth/Token',
+              // logoutEndpoint: '/LogoutPage.aspx',
+              // userInfoEndpoint: '/Auth/User',
+              // authorizeEndpoint: '/Auth/Authorize',
+              // externalLoginsEndpoint: '/Account/ExternalLogins',
+              // profilePictureEndpoint: '/user/profile/picture'
             }
           }
         }
@@ -153,3 +256,5 @@
     </script>
   </body>
 </html>
+ 
+ 

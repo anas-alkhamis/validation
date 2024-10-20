@@ -13,6 +13,8 @@ const RouterView = defineComponent({
 
 //dashboard
 const Dashboard = () => import('./presentation/pages/dashboard/index.vue')
+const AppraisalManagement = () => import('./presentation/pages/appraisal-management/index.vue')
+const ApprovalApplication = () => import('./presentation/pages/approval-application/index.vue')
 //dashboard
 
 // access denied
@@ -28,10 +30,29 @@ const dashboard = {
     icon: 'cubes-dashboard'
   }
 }
-
+const appraisalManagement = {
+  path: '/appraisal-management',
+  name: 'appraisalManagement',
+  component: AppraisalManagement,
+  meta: {
+    title: { en: 'Appraisal Management', ar: 'إدارة التقييم' },
+    icon: "cubes-dashboard"
+  }
+}
+const approvalApplication = {
+  path: '/approval-application',
+  name: 'approvalApplication',
+  component: ApprovalApplication,
+  meta: {
+    title: { en: 'Approval Application', ar:'طلب الموافقة' },
+    icon: "cubes-dashboard"
+  }
+}
 
 const routes = [
   dashboard,
+  appraisalManagement,
+  approvalApplication,
   ...sessionRoutes,
   {
     path: '/:pathMatch(.*)*',
