@@ -15,6 +15,12 @@ const RouterView = defineComponent({
 const Dashboard = () => import('./presentation/pages/dashboard/index.vue')
 //dashboard
 
+//Appraisals
+const Appraisals = () => import('./presentation/pages/appraisals/index.vue')
+const AppraisalsDraftList = () => import('./presentation/pages/appraisals/drafts/index.vue')
+const AppraisalsPerformanceReviewList = () => import('./presentation/pages/appraisals/performance-review-list/index.vue')
+//Appraisals
+
 // access denied
 const AccessDenied = () => import('./presentation/access-denied/access-denied.vue')
 // access denied
@@ -29,9 +35,33 @@ const dashboard = {
   }
 }
 
+// child
+const draftList = {
+  path: '/draft-list',
+  name: 'draft-list',
+  component: AppraisalsDraftList,
+  meta: {
+    title: { en: 'Drafts', ar: 'المسودات' },
+    hasParent: true,
+    parent: 'appraisals'
+  }
+}
+
+// root
+const appraisal = {
+  path: '/appraisals',
+  name: 'appraisals',
+  component: Appraisals,
+  meta: {
+    title: { en: 'Appraisals', ar: 'التقييم' },
+    icon: 'cubes-dashboard'
+  },
+  children: [draftList]
+}
 
 const routes = [
   dashboard,
+  appraisal,
   ...sessionRoutes,
   {
     path: '/:pathMatch(.*)*',

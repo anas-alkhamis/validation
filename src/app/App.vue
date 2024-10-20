@@ -17,11 +17,14 @@ import { TGlobalTranslation } from '../i18n/index'
 import { AppContexts } from '../control'
 import { AppContext } from './domain/def/app-context'
 import { serviceMap } from '../service'
+import { IPerformanceReviewInfo } from './domain/meta/apprisals/i-performance-review-info'
 defineProps(props as any)
 
 const { isBusy, isReady } = useAppContainer()
 
 const appService = IoC.DI().resolve<IAppraisalsAppService>(serviceMap.AppService.key)
+const PerformanceReviewService = IoC.DI().resolve<IPerformanceReviewInfo>(serviceMap.PerformanceReviewService.key)
+
 appService.addEventListener(new CubesEvent(AppServiceEvent.ready), () => {
   const global = toRef(useTranslation<Ti18n>(appService), 'tGlobal') as unknown as Ref<TGlobalTranslation>
   const tm = IoC.DI().resolve<ITranslationManager>(serviceMap.TranslationManager.key)
@@ -30,7 +33,8 @@ appService.addEventListener(new CubesEvent(AppServiceEvent.ready), () => {
       id: AppContexts.appContext!,
       ctorArgs: [
         {
-          [serviceMap.AppService.key]: appService
+          [serviceMap.AppService.key]: appService,
+          [serviceMap.PerformanceReviewService.key]: PerformanceReviewService
         },
         { global, tm }
       ],
@@ -38,4 +42,5 @@ appService.addEventListener(new CubesEvent(AppServiceEvent.ready), () => {
     }
   })
 })
-</script>../control
+</script>
+../control
