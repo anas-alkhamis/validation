@@ -1,6 +1,8 @@
 export default {
   common: {
-    labels: {},
+    labels: {
+      name: 'Name'
+    },
     placeHolders: {},
     messages: {
       success: {},
@@ -11,7 +13,12 @@ export default {
       warning: {}
     }
   },
-  myApplication: {},
+  myApplication: {
+    label: {
+      name: 'Application Name'
+    },
+    placeholder: {}
+  },
   dashboard: {},
   appraisals: {},
   appraisalManagement: {},

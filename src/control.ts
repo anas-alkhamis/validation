@@ -43,7 +43,8 @@ class App extends AppCoreBase {
       require('@fortawesome/free-solid-svg-icons/faMagnifyingGlass').definition,
       require('@fortawesome/free-solid-svg-icons/faQrcode').definition,
       require('@fortawesome/free-solid-svg-icons/faArrowsRotate').definition,
-      require('@fortawesome/free-solid-svg-icons/faPenToSquare').definition
+      require('@fortawesome/free-solid-svg-icons/faPenToSquare').definition,
+      require('./app/icons/dashboard@icon').default.definition
     ]
   }
   getAppContext(): any {
