@@ -12,8 +12,10 @@ import { serviceMap as cubesServiceMap } from 'cubes-app'
 
 const serviceMap = {
   ...cubesServiceMap,
+  PerformanceReviewService: { key: 'PerformanceReviewService', config: {} }
 }
 const repositoryMap = {
+  PerformanceReviewRepository: { key: 'PerformanceReviewRepository', config: {} }
 }
 type TCubesAppraisalServiceMap = typeof serviceMap
 export { services, serviceMap, repositoryMap }

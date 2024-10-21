@@ -1,260 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>New Joiners</title>
-    <base href="/" />
-    <!--Polyfills-->
-    <script>
-      __runtime_public_path__ = {
-        cubes: '/packages/cubes/',
-        'new-joiners-training': '/',
-        'cubes-style': '/packages/cubes-style/',
-        'cubes-ui': '/packages/cubes-ui/',
-        'cubes-app': '/packages/cubes-app/',
-        'cubes-auth': '/packages/cubes-auth/',
-        Vue: '/packages/vue/',
-        VueRouter: '/packages/vue-router/'
-      }
-      if (typeof Promise === 'undefined') document.write('<script src="promise.min.js"><\/script>')
-      if (typeof fetch === 'undefined') document.write('<script src="fetch.umd.js"><\/script>')
-    </script>
- 
-    <script type="systemjs-importmap" src="/packages.json"></script>
-    <script type="text/javascript" src="/loader.min.js"></script>
-  </head>
- 
-  <body>
-    <div data-new-joiners-training-app></div>
-    <script>
-      var context = window
-      System.ready(['Vue', 'VueRouter'], ['cubes-style', 'cubes', 'cubes-ui', 'cubes-app', 'new-joiners-training'], [], function () {}, context)
-    </script>
-    <script type="text/javascript">
-      window.configure = function () {
-        return {
-          secure: true,
-          prodEnv: {
-            base: 'https://cubes.solutions/',
-            nsRoot: 'CubesDataManagement.UI'
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>New Joiners</title>
+  <base href="/" />
+  <!--Polyfills-->
+  <script>
+    __runtime_public_path__ = {
+      cubes: '/packages/cubes/',
+      'new-joiners-training': '/',
+      'cubes-style': '/packages/cubes-style/',
+      'cubes-ui': '/packages/cubes-ui/',
+      'cubes-app': '/packages/cubes-app/',
+      'cubes-auth': '/packages/cubes-auth/',
+      Vue: '/packages/vue/',
+      VueRouter: '/packages/vue-router/'
+    }
+    if (typeof Promise === 'undefined') document.write('<script src="promise.min.js"><\/script>')
+    if (typeof fetch === 'undefined') document.write('<script src="fetch.umd.js"><\/script>')
+  </script>
+
+  <script type="systemjs-importmap" src="/packages.json"></script>
+  <script type="text/javascript" src="/loader.min.js"></script>
+</head>
+
+<body>
+  <div data-new-joiners-training-app></div>
+  <script>
+    var context = window
+    System.ready(['Vue', 'VueRouter'], ['cubes-style', 'cubes', 'cubes-ui', 'cubes-app', 'new-joiners-training'], [], function () { }, context)
+  </script>
+  <script type="text/javascript">
+    window.configure = function () {
+      return {
+        secure: true,
+        prodEnv: {
+          base: 'https://cubes.solutions/',
+          nsRoot: 'CubesDataManagement.UI'
+        },
+        //change this to the required layout to be used in the exported pdf.
+        pdfLayout: 'adeo',
+        disallowedExtensions: ['exe'],
+        folderTypes: [
+          {
+            id: 29,
+            name: { en: 'Measures', ar: 'المقاييس' },
+            subObjectsType: 29
           },
-          //change this to the required layout to be used in the exported pdf.
-          pdfLayout: 'adeo',
-          disallowedExtensions: ['exe'],
-          folderTypes: [
-            {
-              id: 29,
-              name: { en: 'Measures', ar: 'المقاييس' },
-              subObjectsType: 29
-            },
-            {
-              id: 3,
-              name: { en: 'KPIs', ar: 'مؤشرات قياس الأداء' },
-              subObjectsType: 3
-            },
-            {
-              id: 82,
-              name: { en: 'Risks', ar: 'المخاطر' },
-              subObjectsType: 82
-            }
-          ],
-          appraisal: {
-            closeAppraisalModal: {
-              comments: { optional: true, show: true },
-              evidences: { optional: true, show: true }
-            },
-            metadata: {
-              // used to preview the classification in the appraisal details/card, use the classification ID in this field
-              classification: 57,
-              pillar: 76
-            },
-            auditLogSchema: {
-              '1090ec62-7ccd-42cf-8920-7eefa1ab1d70': {
-                typeId: '1090ec62-7ccd-42cf-8920-7eefa1ab1d70',
-                name: 'ApplicationInstance',
-                properties: {
-                  'c16050c4-a528-4cb9-924a-7ea62ccde2ca': {
-                    typeId: 'c16050c4-a528-4cb9-924a-7ea62ccde2ca',
-                    name: {
-                      en: 'Status',
-                      ar: 'الحالة'
-                    }
-                  },
-                  '942c095f-c6ca-4b19-a347-d2629fa6bc1f': {
-                    typeId: '942c095f-c6ca-4b19-a347-d2629fa6bc1f',
-                    name: {
-                      en: 'Individual Objectives',
-                      ar: 'الأهداف الفردية'
-                    }
-                  },
-                  '42d8100e-44d1-4c01-b947-3cf5c966f90e': {
-                    typeId: '42d8100e-44d1-4c01-b947-3cf5c966f90e',
-                    name: {
-                      en: 'Individual Objectives Ratings',
-                      ar: 'تقييم الأهداف الفردية'
-                    }
-                  },
-                  'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f': {
-                    typeId: 'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f',
-                    name: {
-                      en: 'Competencies Ratings',
-                      ar: 'تقييم الكفاءات'
-                    }
+          {
+            id: 3,
+            name: { en: 'KPIs', ar: 'مؤشرات قياس الأداء' },
+            subObjectsType: 3
+          },
+          {
+            id: 82,
+            name: { en: 'Risks', ar: 'المخاطر' },
+            subObjectsType: 82
+          }
+        ],
+        appraisal: {
+          closeAppraisalModal: {
+            comments: { optional: true, show: true },
+            evidences: { optional: true, show: true }
+          },
+          metadata: {
+            // used to preview the classification in the appraisal details/card, use the classification ID in this field
+            classification: 57,
+            pillar: 76
+          },
+          auditLogSchema: {
+            '1090ec62-7ccd-42cf-8920-7eefa1ab1d70': {
+              typeId: '1090ec62-7ccd-42cf-8920-7eefa1ab1d70',
+              name: 'ApplicationInstance',
+              properties: {
+                'c16050c4-a528-4cb9-924a-7ea62ccde2ca': {
+                  typeId: 'c16050c4-a528-4cb9-924a-7ea62ccde2ca',
+                  name: {
+                    en: 'Status',
+                    ar: 'الحالة'
                   }
-                }
-              },
- 
-              'b0a86026-49da-4457-bb4a-9b6bb8e3ec50': {
-                typeId: 'b0a86026-49da-4457-bb4a-9b6bb8e3ec50',
-                name: 'Objective',
-                properties: {
-                  '5984da27-ab4a-4cca-8cd0-5ef601fd86dc': {
-                    en: 'Name',
-                    ar: 'الاسم'
-                  },
-                  '35af1a75-1656-400f-a198-c5fd5b5e50f1': {
-                    en: 'Kpi description',
-                    ar: 'وصف مؤشر قياس الأداء'
-                  },
-                  '9b8ea9f7-b424-4d1a-9485-209aeb067998': {
-                    en: 'Target Date',
-                    ar: 'التاريخ المستهدف'
-                  },
-                  '41293d4d-eed3-405d-a0fd-8cc4eeb47fdb': {
-                    en: 'Weight',
-                    ar: 'الوزن'
+                },
+                '942c095f-c6ca-4b19-a347-d2629fa6bc1f': {
+                  typeId: '942c095f-c6ca-4b19-a347-d2629fa6bc1f',
+                  name: {
+                    en: 'Individual Objectives',
+                    ar: 'الأهداف الفردية'
                   }
-                }
-              },
-              'fbc95025-4f68-466d-9bb1-520ced57fd24': {
-                typeId: 'fbc95025-4f68-466d-9bb1-520ced57fd24',
-                name: 'CompetencyRating',
-                properties: {
-                  '32fd8e20-45a1-4520-9554-3baa22b33654': {
-                    en: 'Self Rating',
-                    ar: 'التقييم الذاتي'
-                  },
-                  'a5ac6d0a-682f-4420-aa24-1429ed87f105': {
-                    en: 'Manager Rating',
-                    ar: 'تقييم المدير'
+                },
+                '42d8100e-44d1-4c01-b947-3cf5c966f90e': {
+                  typeId: '42d8100e-44d1-4c01-b947-3cf5c966f90e',
+                  name: {
+                    en: 'Individual Objectives Ratings',
+                    ar: 'تقييم الأهداف الفردية'
                   }
-                }
-              },
-              '93323715-1133-49b1-a193-ffe82d7b37d9': {
-                typeId: '93323715-1133-49b1-a193-ffe82d7b37d9',
-                name: 'ObjectiveRating',
-                properties: {
-                  '6d18a5e8-f778-491c-bbc2-8552a21ffeff': {
-                    en: 'Self Rating',
-                    ar: 'التقييم الذاتي'
-                  },
-                  '35e42de0-69c6-489a-b819-d02d223f5f92': {
-                    en: 'Manager Rating',
-                    ar: 'تقييم المدير'
+                },
+                'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f': {
+                  typeId: 'bfb1d712-f3e7-4e79-8e0f-5b1d96390a7f',
+                  name: {
+                    en: 'Competencies Ratings',
+                    ar: 'تقييم الكفاءات'
                   }
                 }
               }
-            }
-          },
-          themes: [
-            {
-              name: 'dark',
-              ui: {
-                icon: 'moon'
+            },
+
+            'b0a86026-49da-4457-bb4a-9b6bb8e3ec50': {
+              typeId: 'b0a86026-49da-4457-bb4a-9b6bb8e3ec50',
+              name: 'Objective',
+              properties: {
+                '5984da27-ab4a-4cca-8cd0-5ef601fd86dc': {
+                  en: 'Name',
+                  ar: 'الاسم'
+                },
+                '35af1a75-1656-400f-a198-c5fd5b5e50f1': {
+                  en: 'Kpi description',
+                  ar: 'وصف مؤشر قياس الأداء'
+                },
+                '9b8ea9f7-b424-4d1a-9485-209aeb067998': {
+                  en: 'Target Date',
+                  ar: 'التاريخ المستهدف'
+                },
+                '41293d4d-eed3-405d-a0fd-8cc4eeb47fdb': {
+                  en: 'Weight',
+                  ar: 'الوزن'
+                }
               }
             },
-            {
-              name: 'light',
-              ui: {
-                icon: 'sun'
+            'fbc95025-4f68-466d-9bb1-520ced57fd24': {
+              typeId: 'fbc95025-4f68-466d-9bb1-520ced57fd24',
+              name: 'CompetencyRating',
+              properties: {
+                '32fd8e20-45a1-4520-9554-3baa22b33654': {
+                  en: 'Self Rating',
+                  ar: 'التقييم الذاتي'
+                },
+                'a5ac6d0a-682f-4420-aa24-1429ed87f105': {
+                  en: 'Manager Rating',
+                  ar: 'تقييم المدير'
+                }
+              }
+            },
+            '93323715-1133-49b1-a193-ffe82d7b37d9': {
+              typeId: '93323715-1133-49b1-a193-ffe82d7b37d9',
+              name: 'ObjectiveRating',
+              properties: {
+                '6d18a5e8-f778-491c-bbc2-8552a21ffeff': {
+                  en: 'Self Rating',
+                  ar: 'التقييم الذاتي'
+                },
+                '35e42de0-69c6-489a-b819-d02d223f5f92': {
+                  en: 'Manager Rating',
+                  ar: 'تقييم المدير'
+                }
               }
             }
-          ],
-          cultures: [
-            { id: 9, lang: 'en', locale: 'en-US', lcid: 1033, dir: 'ltr' },
-            { id: 1, lang: 'ar', locale: 'ar-AE', lcid: 14337, dir: 'rtl' }
-          ],
-          currencySymbol: { ar: 'د.إ', en: 'AED' },
-          social: {
-            facebook: 'https://www.facebook.com/sharer/sharer.php',
-            twitter: 'https://www.twitter.com/share',
-            linkedin: 'https://linkedin.com/shareArticle'
-          },
-          dashboardLib: {
-            network: {
-              shared: {
-                baseURL: 'https://cubes-solutions.com/CubesDev/',
-                api: '/api/v2'
-              }
+          }
+        },
+        themes: [
+          {
+            name: 'dark',
+            ui: {
+              icon: 'moon'
             }
           },
+          {
+            name: 'light',
+            ui: {
+              icon: 'sun'
+            }
+          }
+        ],
+        cultures: [
+          { id: 9, lang: 'en', locale: 'en-US', lcid: 1033, dir: 'ltr' },
+          { id: 1, lang: 'ar', locale: 'ar-AE', lcid: 14337, dir: 'rtl' }
+        ],
+        currencySymbol: { ar: 'د.إ', en: 'AED' },
+        social: {
+          facebook: 'https://www.facebook.com/sharer/sharer.php',
+          twitter: 'https://www.twitter.com/share',
+          linkedin: 'https://linkedin.com/shareArticle'
+        },
+        dashboardLib: {
           network: {
             shared: {
-              baseURL: 'https://cubes-solutions.com',
-              api: '/PreAppraisals/Appraisal/api',
-              maxCachedRequests: 10
-            },
-            objectsBrowser: {
-              baseURL: 'https://cubes-solutions.com/CubesDev',
-              api: '/api'
-            },
-            foldersBrowser: {
-              baseURL: 'https://cubes-solutions.com/CubesDev',
-              api: '/api'
-            },
-            pdf: {
-              baseURL: 'https://cubes-solutions.com/CubesDev',
+              baseURL: 'https://cubes-solutions.com/CubesDev/',
               api: '/api/v2'
-            },
-            appraisalsApi: {
-              baseURL: 'https://cubes-solutions.com',
-              api: '/PreAppraisals/Appraisal/api',
-              maxCachedRequests: 10
-            },
-            appraisalsSecurityApi: {
-              baseURL: 'https://cubes-solutions.com',
-              api: '/Appraisals/SecurityAPI/api',
-              maxCachedRequests: 10
-            },
-            security: {
-              baseURL: 'https://cubes-solutions.com/CubesDev',
-              api: '/api/v2'
-            },
-            auth: {
-              mode: 'id4',
-              baseURL: 'https://cubes-solutions.com/Appraisals/IdentityServerLocal',
-              authRelayUri: 'https://localhost.cubes.solutions:8080/packages/cubes-ui/auth-relay.html',
-              api: '/api',
-              clientId: 'cubes',
-              tokenEndpoint: '/connect/token',
-              logoutEndpoint: '/auth/logout',
-              userInfoEndpoint: '/user/profile',
-              authorizeEndpoint: '/auth/authorize',
-              externalLoginsEndpoint: '/auth/externalLogins',
-              profilePictureEndpoint: '/user/profile/picture'
-              // mode: 'cubes',
-              // pkceURL: 'https://cubes.solutions/CubesAppraisals.UI',
-              // baseURL: 'https://cubes-solutions.com/CubesDev',
-              // authRelayUri: 'https://cubes.solutions/CubesAppraisals.UI/Content/packages/cubes-ui@2.9.3/auth-relay.html',
-              // api: '/api',
-              // clientId: 'cubes',
-              // tokenEndpoint: '/Auth/Token',
-              // logoutEndpoint: '/LogoutPage.aspx',
-              // userInfoEndpoint: '/Auth/User',
-              // authorizeEndpoint: '/Auth/Authorize',
-              // externalLoginsEndpoint: '/Account/ExternalLogins',
-              // profilePictureEndpoint: '/user/profile/picture'
             }
+          }
+        },
+        network: {
+          shared: {
+            baseURL: 'https://cubes-solutions.com',
+            api: '/PreAppraisals/Appraisal/api',
+            maxCachedRequests: 10
+          },
+          objectsBrowser: {
+            baseURL: 'https://cubes-solutions.com/CubesDev',
+            api: '/api'
+          },
+          foldersBrowser: {
+            baseURL: 'https://cubes-solutions.com/CubesDev',
+            api: '/api'
+          },
+          pdf: {
+            baseURL: 'https://cubes-solutions.com/CubesDev',
+            api: '/api/v2'
+          },
+          appraisalsApi: {
+            baseURL: 'https://cubes-solutions.com',
+            api: '/PreAppraisals/Appraisal/api',
+            maxCachedRequests: 10
+          },
+          appraisalsSecurityApi: {
+            baseURL: 'https://cubes-solutions.com',
+            api: '/Appraisals/SecurityAPI/api',
+            maxCachedRequests: 10
+          },
+          security: {
+            baseURL: 'https://cubes-solutions.com/CubesDev',
+            api: '/api/v2'
+          },
+          auth: {
+            mode: 'id4',
+            baseURL: 'https://cubes-solutions.com/Appraisals/IdentityServerLocal',
+            authRelayUri: 'https://localhost.cubes.solutions:8080/packages/cubes-ui/auth-relay.html',
+            api: '/api',
+            clientId: 'cubes',
+            tokenEndpoint: '/connect/token',
+            logoutEndpoint: '/auth/logout',
+            userInfoEndpoint: '/user/profile',
+            authorizeEndpoint: '/auth/authorize',
+            externalLoginsEndpoint: '/auth/externalLogins',
+            profilePictureEndpoint: '/user/profile/picture'
+            // mode: 'cubes',
+            // pkceURL: 'https://cubes.solutions/CubesAppraisals.UI',
+            // baseURL: 'https://cubes-solutions.com/CubesDev',
+            // authRelayUri: 'https://cubes.solutions/CubesAppraisals.UI/Content/packages/cubes-ui@2.9.3/auth-relay.html',
+            // api: '/api',
+            // clientId: 'cubes',
+            // tokenEndpoint: '/Auth/Token',
+            // logoutEndpoint: '/LogoutPage.aspx',
+            // userInfoEndpoint: '/Auth/User',
+            // authorizeEndpoint: '/Auth/Authorize',
+            // externalLoginsEndpoint: '/Account/ExternalLogins',
+            // profilePictureEndpoint: '/user/profile/picture'
           }
         }
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
+
 </html>
- 
- 

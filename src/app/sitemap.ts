@@ -17,6 +17,12 @@ const AppraisalManagement = () => import('./presentation/pages/appraisal-managem
 const ApprovalApplication = () => import('./presentation/pages/approval-application/index.vue')
 //dashboard
 
+//Appraisals
+const Appraisals = () => import('./presentation/pages/appraisals/index.vue')
+const AppraisalsDraftList = () => import('./presentation/pages/appraisals/drafts/index.vue')
+const AppraisalsPerformanceReviewList = () => import('./presentation/pages/appraisals/performance-review-list/index.vue')
+//Appraisals
+
 // access denied
 const AccessDenied = () => import('./presentation/access-denied/access-denied.vue')
 // access denied
@@ -30,29 +36,34 @@ const dashboard = {
     icon: 'cubes-dashboard'
   }
 }
-const appraisalManagement = {
-  path: '/appraisal-management',
-  name: 'appraisalManagement',
-  component: AppraisalManagement,
+
+// child
+const draftList = {
+  path: '/draft-list',
+  name: 'draft-list',
+  component: AppraisalsDraftList,
   meta: {
-    title: { en: 'Appraisal Management', ar: 'إدارة التقييم' },
-    icon: "cubes-dashboard"
+    title: { en: 'Drafts', ar: 'المسودات' },
+    hasParent: true,
+    parent: 'appraisals'
   }
 }
-const approvalApplication = {
-  path: '/approval-application',
-  name: 'approvalApplication',
-  component: ApprovalApplication,
+
+// root
+const appraisal = {
+  path: '/appraisals',
+  name: 'appraisals',
+  component: Appraisals,
   meta: {
-    title: { en: 'Approval Application', ar:'طلب الموافقة' },
-    icon: "cubes-dashboard"
-  }
+    title: { en: 'Appraisals', ar: 'التقييم' },
+    icon: 'cubes-dashboard'
+  },
+  children: [draftList]
 }
 
 const routes = [
   dashboard,
-  appraisalManagement,
-  approvalApplication,
+  appraisal,
   ...sessionRoutes,
   {
     path: '/:pathMatch(.*)*',
