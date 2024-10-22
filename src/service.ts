@@ -12,10 +12,14 @@ import { serviceMap as cubesServiceMap } from 'cubes-app'
 
 const serviceMap = {
   ...cubesServiceMap,
-  PerformanceReviewService: { key: 'PerformanceReviewService', config: {} }
+  PerformanceReviewService: { key: 'PerformanceReviewService', config: {} },
+  CompetencyGroupService: { key: 'CompetencyGroupService', config: {} },
+  CompetencyGroupInfoService: { key: 'CompetencyGroupInfoService', config: {} }
 }
 const repositoryMap = {
-  PerformanceReviewRepository: { key: 'PerformanceReviewRepository', config: {} }
+  PerformanceReviewRepository: { key: 'PerformanceReviewRepository', config: {} },
+  CompetencyGroupRepository: { key: 'CompetencyGroupRepository', config: {} },
+  CompetencyGroupInfoRepository: { key: 'CompetencyGroupInfoRepository', config: {} }
 }
 type TCubesAppraisalServiceMap = typeof serviceMap
 export { services, serviceMap, repositoryMap }

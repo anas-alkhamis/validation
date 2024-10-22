@@ -18,13 +18,16 @@ import { AppContexts } from '../control'
 import { AppContext } from './domain/def/app-context'
 import { serviceMap } from '../service'
 import { IPerformanceReviewInfo } from './domain/meta/apprisals/i-performance-review-info'
+import { ICompetencyGroupService } from './service/meta/competency-matrices/i-competency-group-service'
+import { ICompetencyGroupInfoService } from './service/meta/competency-matrices/i-competency-group-info-service'
 defineProps(props as any)
 
 const { isBusy, isReady } = useAppContainer()
 
 const appService = IoC.DI().resolve<IAppraisalsAppService>(serviceMap.AppService.key)
 const PerformanceReviewService = IoC.DI().resolve<IPerformanceReviewInfo>(serviceMap.PerformanceReviewService.key)
-
+const CompetencyGroupService = IoC.DI().resolve<ICompetencyGroupService>(serviceMap.CompetencyGroupService.key)
+const CompetencyGroupInfoService = IoC.DI().resolve<ICompetencyGroupInfoService>(serviceMap.CompetencyGroupInfoService.key)
 appService.addEventListener(new CubesEvent(AppServiceEvent.ready), () => {
   const global = toRef(useTranslation<Ti18n>(appService), 'tGlobal') as unknown as Ref<TGlobalTranslation>
   const tm = IoC.DI().resolve<ITranslationManager>(serviceMap.TranslationManager.key)
@@ -34,7 +37,9 @@ appService.addEventListener(new CubesEvent(AppServiceEvent.ready), () => {
       ctorArgs: [
         {
           [serviceMap.AppService.key]: appService,
-          [serviceMap.PerformanceReviewService.key]: PerformanceReviewService
+          [serviceMap.PerformanceReviewService.key]: PerformanceReviewService,
+          [serviceMap.CompetencyGroupService.key]: CompetencyGroupService,
+          [serviceMap.CompetencyGroupInfoService.key]: CompetencyGroupInfoService
         },
         { global, tm }
       ],

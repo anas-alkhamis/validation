@@ -13,8 +13,6 @@ const RouterView = defineComponent({
 
 //dashboard
 const Dashboard = () => import('./presentation/pages/dashboard/index.vue')
-const AppraisalManagement = () => import('./presentation/pages/appraisal-management/index.vue')
-const ApprovalApplication = () => import('./presentation/pages/approval-application/index.vue')
 //dashboard
 
 //Appraisals
@@ -22,6 +20,8 @@ const Appraisals = () => import('./presentation/pages/appraisals/index.vue')
 const AppraisalsDraftList = () => import('./presentation/pages/appraisals/drafts/index.vue')
 const AppraisalsPerformanceReviewList = () => import('./presentation/pages/appraisals/performance-review-list/index.vue')
 //Appraisals
+//Competency Matrices
+const CompetencyMatrices = () => import('./presentation/pages/competency-matrices/index.vue')
 
 // access denied
 const AccessDenied = () => import('./presentation/access-denied/access-denied.vue')
@@ -60,10 +60,20 @@ const appraisal = {
   },
   children: [draftList]
 }
+const competencyMatrices = {
+  path: '/competency-matrices',
+  name: 'competency-matrices',
+  component: CompetencyMatrices,
+  meta: {
+    title: { en: 'Competency Matrices', ar: 'مصفوفات الكفاءة' },
+    icon: 'cubes-dashboard'
+  }
+}
 
 const routes = [
   dashboard,
   appraisal,
+  competencyMatrices,
   ...sessionRoutes,
   {
     path: '/:pathMatch(.*)*',
