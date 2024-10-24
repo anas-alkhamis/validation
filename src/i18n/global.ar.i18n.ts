@@ -27,7 +27,18 @@ export default {
     searchPlaceholder: 'البحث حسب اسم مصفوفة الكفاءة',
     createMatrix: 'إنشاء مصفوفة كفاءة جديدة',
     noDataListTitle: 'لم تقم بإنشاء أي مصفوفة كفاءة بعد',
-    noDataListSubTitle: 'يمكنك إنشاء مصفوفة الكفاءات للبدء'
+    noDataListSubTitle: 'يمكنك إنشاء مصفوفة الكفاءات للبدء',
+    tableHeaders: {
+      name: 'الاسم',
+      numberOfCompetencies: 'عدد الكفاءات',
+      action: 'الإجراءات'
+    },
+    deleteConfirm: {
+      confirm: 'يتأكد',
+      cancel: 'يلغي',
+      header: " تأكيد حذف مجموعة الكفاءة",
+      body: 'هل أنت متأكد أنك تريد حذف عنصر مجموعة الكفاءة؟ لا يمكن التراجع عن هذا الإجراء'
+    }
   },
   settings: {}
 }

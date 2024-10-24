@@ -27,7 +27,18 @@ export default {
     searchPlaceholder: 'Search by competency matrix name',
     createMatrix: 'Create New Competency Matrix',
     noDataListTitle: 'You have not created any competency matrix yet',
-    noDataListSubTitle: 'You can create a competency matrix to start'
+    noDataListSubTitle: 'You can create a competency matrix to start',
+    tableHeaders: {
+      name: 'Name',
+      numberOfCompetencies: 'numberOfCompetencies',
+      action: 'Action'
+    },
+    deleteConfirm: {
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      header: 'Delete CompetencyGroup Confirmation',
+      body: 'Are you sure you want to delete this competency group item? This action cannot be undone.'
+    }
   },
   settings: {}
 }

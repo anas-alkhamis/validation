@@ -41,9 +41,9 @@
                 <thead class="border-bottom">
                   <tr v-if="!isDetails">
                     <app-bulk-actions :selected="bulk.selectedSet" class="py-2" colspan="1" :items="items" hide-selected @change="(e:boolean) => bulk.onBulkActionsCheck(e)"></app-bulk-actions>
-                    <th class="w-50 pl-3">Name</th>
-                    <th class="w-50">Number of Competencies</th>
-                    <th style="width: 80px">Action</th>
+                    <th class="w-50 pl-3">{{ globalTranslation.configuration.tableHeaders.name }}</th>
+                    <th class="w-50">{{ globalTranslation.configuration.tableHeaders.numberOfCompetencies }}</th>
+                    <th style="width: 80px">{{ globalTranslation.configuration.tableHeaders.action }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -53,7 +53,7 @@
                         :modelValue="bulk.selectedSet.has(item[keyMapper.uniqueId])"
                         :selected="bulk.selectedSet.has(item[keyMapper.uniqueId])"
                         :id="`r-${item[keyMapper.uniqueId]}`"
-                        class="ml-1"
+                        class="ml-1 pt-1"
                         @change="(e:any) => bulk.updateSelection(item[keyMapper.uniqueId], e)"
                       />
                     </td>
@@ -109,13 +109,19 @@
     </template>
   </app-summary-page-content>
   <v-modal v-model="isOpen" :centered="true">
-    <template #header> <h5 class="my-auto">Delete CompetencyGroup Confirmation</h5></template>
+    <template #header>
+      <h5 class="my-auto">{{ globalTranslation.configuration.deleteConfirm.header }}</h5></template
+    >
     <template #body>
-      <p>Are you sure you want to delete {{ deletedItem?.name[lang] }} competency group item? This action cannot be undone.</p></template
+      <div>
+        <p>
+          {{ globalTranslation.configuration.deleteConfirm.body }}
+        </p>
+      </div></template
     >
     <template #footer>
-      <v-button @click="handleCancelDelete" class="btn btn-secondary">Cancel</v-button>
-      <app-async-button @click="deleteCompetencyGroupAsync">Confirm</app-async-button>
+      <v-button @click="handleCancelDelete" class="btn btn-secondary">{{ globalTranslation.configuration.deleteConfirm.cancel }}</v-button>
+      <app-async-button @click="deleteCompetencyGroupAsync">{{ globalTranslation.configuration.deleteConfirm.confirm }}</app-async-button>
     </template>
   </v-modal>
 </template>
@@ -129,7 +135,7 @@ import { computed, Ref, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const appContext = IoC.DI().resolve<IAppContext>(AppContexts.appContext!),
-  globalTranslation = appContext.translation.global.value,
+  globalTranslation = computed(()=> appContext.translation.global.value),
   appService = (appContext!.services as THashMap)[serviceMap.AppService.key],
   competencyGroup = (appContext!.services as THashMap)[serviceMap.CompetencyGroupService.key]
 
