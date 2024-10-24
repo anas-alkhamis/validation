@@ -35,22 +35,27 @@
             class="pb-2 h-100"
             @set-bulk="setBulk"
           >
+            {{ bulk }}
             <template #items="{ items }">
               <table class="w-100">
                 <thead class="border-bottom">
                   <tr v-if="!isDetails">
-                    <th style="width: 100px" class="py-3">
-                      <app-bulk-actions :selected="bulk.selectedSet" colspan="2" :items="items" :actions="[]" hide-selected @change="(e:boolean) => bulk.onBulkActionsCheck(e)"></app-bulk-actions>
-                    </th>
+                    <app-bulk-actions :selected="bulk.selectedSet" class="py-2" colspan="1" :items="items" hide-selected @change="(e:boolean) => bulk.onBulkActionsCheck(e)"></app-bulk-actions>
                     <th class="w-50 pl-3">Name</th>
                     <th class="w-50">Number of Competencies</th>
                     <th style="width: 80px">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="border-bottom" v-for="item in items">
-                    <td v-if="!isDetails" class="py-4">
-                      <v-checkbox class="ml-2" :disabled="false" />
+                  <tr class="border-bottom order-last:border-0" v-for="item in items">
+                    <td v-if="!isDetails" class="py-3">
+                      <v-checkbox
+                        :modelValue="bulk.selectedSet.has(item[keyMapper.uniqueId])"
+                        :selected="bulk.selectedSet.has(item[keyMapper.uniqueId])"
+                        :id="`r-${item[keyMapper.uniqueId]}`"
+                        class="ml-1"
+                        @change="(e:any) => bulk.updateSelection(item[keyMapper.uniqueId], e)"
+                      />
                     </td>
                     <td>
                       <router-link
@@ -70,8 +75,8 @@
                       </span>
                     </td>
                     <td v-if="!isDetails">
-                      <div class="mr-4">
-                        <v-table-actions :items="actionList"></v-table-actions>
+                      <div class="mr-3">
+                        <v-table-actions :items="createActions(item)"></v-table-actions>
                       </div>
                     </td>
                   </tr>
@@ -95,16 +100,30 @@
         </v-col>
       </v-card>
     </template>
+    <template #list-add-button>
+      <v-button v-if="isDetails" class="btn-floated position-absolute" accent="primary" size="md" @click="createCompetency"> <v-icon name="plus"></v-icon> </v-button>
+    </template>
     <template #details-header> <div>details-header</div></template>
     <template #details>
       <router-view />
     </template>
   </app-summary-page-content>
+  <v-modal v-model="isOpen" :centered="true">
+    <template #header> <h5 class="my-auto">Delete CompetencyGroup Confirmation</h5></template>
+    <template #body>
+      <p>Are you sure you want to delete {{ deletedItem?.name[lang] }} competency group item? This action cannot be undone.</p></template
+    >
+    <template #footer>
+      <v-button @click="handleCancelDelete" class="btn btn-secondary">Cancel</v-button>
+      <app-async-button @click="deleteCompetencyGroupAsync">Confirm</app-async-button>
+    </template>
+  </v-modal>
 </template>
 <script lang="ts" setup>
+import { ICompetency } from '@/app/domain/meta/my-application/common/i-competency'
 import { AppContexts } from '@/control'
 import { serviceMap } from '@/service'
-import { IoC, THashMap } from 'cubes'
+import { IoC, THashMap, TNullable } from 'cubes'
 import { IAppContext, ITableAction } from 'cubes-ui'
 import { computed, Ref, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -116,11 +135,12 @@ const appContext = IoC.DI().resolve<IAppContext>(AppContexts.appContext!),
 
 const filterModel = ref<{ name: string }>({ name: '' })
 const filterRef = ref(),
-  bulk = ref(),
+  bulk = ref({}) as Ref<any>,
   dataView = ref(),
   route = useRoute(),
-  router = useRouter()
-console.log(route)
+  router = useRouter(),
+  isOpen = ref(false),
+  deletedItem = ref<TNullable<ICompetency>>(null)
 
 const isDetails = computed(() => (route.params.id ? true : false))
 const isCreate = computed(() => route.name === 'create-competency')
@@ -128,8 +148,17 @@ const lang = computed(() => appService.application.state.ui.culture.lang)
 const keyMapper = computed(() => ({ uniqueId: 'id', searchableKey: `name.${lang.value}` }))
 
 // table actions
-const actionList: Ref<ITableAction[]> = ref([
+const handleDeleteConfirm = (data: ITableAction & { item: ICompetency }) => {
+  deletedItem.value = data.item
+  isOpen.value = true
+}
+const handleCancelDelete = () => {
+  deletedItem.value = null
+  isOpen.value = false
+}
+const createActions = (item: ICompetency) => [
   {
+    item,
     title: { en: 'Edit', ar: 'تعديل' },
     icon: 'pen',
     handler: (args: any) => {
@@ -138,14 +167,14 @@ const actionList: Ref<ITableAction[]> = ref([
     disabled: true
   },
   {
+    item,
     title: { en: 'Delete', ar: 'حذف' },
     icon: 'trash',
     accent: 'danger',
-    handler: (args: any) => {
-      console.log('args', args)
-    }
+    handler: handleDeleteConfirm
   }
-])
+]
+
 const setBulk = (b: any) => {
   bulk.value = b
 }
@@ -154,14 +183,26 @@ const createCompetency = () => {
     name: 'create-competency'
   })
 }
+
 const getCompetencyGroupListAsync = async (f = {} as any) => {
   return new Promise(async (res, rej) => {
     try {
-      const result = await competencyGroup.listAsync(f)
+      const result = await competencyGroup.listAsync({ ...f, limit: 10 })
       res(result)
     } catch (e) {
       rej(e)
     }
   })
 }
+const deleteCompetencyGroupAsync = () => () =>
+  new Promise(async (res, rej) => {
+    try {
+      await competencyGroup.deleteAsync(deletedItem?.value?.id)
+      res('Done')
+      handleCancelDelete()
+      dataView.value.asyncModel = true
+    } catch (e: any) {
+      rej(e.message)
+    }
+  })
 </script>
