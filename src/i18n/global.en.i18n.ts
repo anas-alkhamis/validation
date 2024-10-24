@@ -23,6 +23,11 @@ export default {
   appraisals: {},
   appraisalManagement: {},
   approvalApplications: {},
-  configuration: {},
+  configuration: {
+    searchPlaceholder: 'Search by competency matrix name',
+    createMatrix: 'Create New Competency Matrix',
+    noDataListTitle: 'You have not created any competency matrix yet',
+    noDataListSubTitle: 'You can create a competency matrix to start'
+  },
   settings: {}
 }

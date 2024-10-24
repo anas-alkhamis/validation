@@ -18,10 +18,11 @@ const Dashboard = () => import('./presentation/pages/dashboard/index.vue')
 //Appraisals
 const Appraisals = () => import('./presentation/pages/appraisals/index.vue')
 const AppraisalsDraftList = () => import('./presentation/pages/appraisals/drafts/index.vue')
-const AppraisalsPerformanceReviewList = () => import('./presentation/pages/appraisals/performance-review-list/index.vue')
-//Appraisals
+
 //Competency Matrices
 const CompetencyMatrices = () => import('./presentation/pages/competency-matrices/index.vue')
+const CoreCompetencies = () => import('./presentation/pages/competency-matrices/core-competencies/index.vue')
+const CreateCompetency = () => import('./presentation/pages/competency-matrices//create-competency/index.vue')
 
 // access denied
 const AccessDenied = () => import('./presentation/access-denied/access-denied.vue')
@@ -48,6 +49,32 @@ const draftList = {
     parent: 'appraisals'
   }
 }
+const coreCompetencies = {
+  path: 'core-competencies/:id/view',
+  name: 'core-competencies',
+  component: CoreCompetencies,
+  meta: {
+    title: { en: 'Core Competencies', ar: 'الكفاءات الأساسية' },
+    hasParent: true,
+    parent: 'competency-matrices',
+    child: true,
+    disabled: true,
+    viewMode: false
+  }
+}
+const createCompetencies = {
+  path: 'create-competency',
+  name: 'create-competency',
+  component: CreateCompetency,
+  meta: {
+    title: { en: 'Create New Competency Matrix', ar: 'الكفاءات الأساسيةإنشاء مصفوفة كفاءة جديدة' },
+    hasParent: true,
+    parent: 'competency-matrices',
+    child: true,
+    disabled: true,
+    viewMode: false
+  }
+}
 
 // root
 const appraisal = {
@@ -67,7 +94,8 @@ const competencyMatrices = {
   meta: {
     title: { en: 'Competency Matrices', ar: 'مصفوفات الكفاءة' },
     icon: 'cubes-dashboard'
-  }
+  },
+  children: [coreCompetencies, createCompetencies]
 }
 
 const routes = [
@@ -89,7 +117,7 @@ const routes = [
     }
   }
 ]
-if (window['configure']().secure) {
+if ((window as unknown as Window & { configure: any })['configure']().secure) {
   profilePage.meta.icon = 'cubes-profile'
   routes.splice(routes.length - 2, 0, profilePage)
 }

@@ -23,6 +23,11 @@ export default {
   appraisals: {},
   appraisalManagement: {},
   approvalApplications: {},
-  configuration: {},
+  configuration: {
+    searchPlaceholder: 'البحث حسب اسم مصفوفة الكفاءة',
+    createMatrix: 'إنشاء مصفوفة كفاءة جديدة',
+    noDataListTitle: 'لم تقم بإنشاء أي مصفوفة كفاءة بعد',
+    noDataListSubTitle: 'يمكنك إنشاء مصفوفة الكفاءات للبدء'
+  },
   settings: {}
 }
