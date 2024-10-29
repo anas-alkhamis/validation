@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import { profilePage } from 'cubes-app'
 import { sessionRoutes } from 'cubes-ui'
+import { PageMode } from './domain/meta/my-application/common/enum/competency'
 
 // const Home = () => import('./presentation/home/index.vue')
 
@@ -21,8 +22,9 @@ const AppraisalsDraftList = () => import('./presentation/pages/appraisals/drafts
 
 //Competency Matrices
 const CompetencyMatrices = () => import('./presentation/pages/competency-matrices/index.vue')
-const CoreCompetencies = () => import('./presentation/pages/competency-matrices/core-competencies/index.vue')
-const CreateCompetency = () => import('./presentation/pages/competency-matrices//create-competency/index.vue')
+const CreateHeader = () => import('./presentation/pages/competency-matrices/content/headers/create.vue')
+const EditHeader = () => import('./presentation/pages/competency-matrices/content/headers/edit.vue')
+const ViewHeader = () => import('./presentation/pages/competency-matrices/content/headers/view.vue')
 
 // access denied
 const AccessDenied = () => import('./presentation/access-denied/access-denied.vue')
@@ -52,27 +54,52 @@ const draftList = {
 const coreCompetencies = {
   path: 'core-competencies/:id/view',
   name: 'core-competencies',
-  component: CoreCompetencies,
+  components: {
+    default: RouterView,
+    header: ViewHeader
+  },
   meta: {
     title: { en: 'Core Competencies', ar: 'الكفاءات الأساسية' },
     hasParent: true,
     parent: 'competency-matrices',
     child: true,
     disabled: true,
-    viewMode: false
+    viewMode: false,
+    mode: PageMode.VIEW
   }
 }
 const createCompetencies = {
   path: 'create-competency',
   name: 'create-competency',
-  component: CreateCompetency,
+  components: {
+    default: RouterView,
+    header: CreateHeader
+  },
   meta: {
     title: { en: 'Create New Competency Matrix', ar: 'الكفاءات الأساسيةإنشاء مصفوفة كفاءة جديدة' },
     hasParent: true,
     parent: 'competency-matrices',
     child: true,
     disabled: true,
-    viewMode: false
+    viewMode: false,
+    mode: PageMode.CREATE
+  }
+}
+const editCompetencies = {
+  path: 'edit-competency/:id',
+  name: 'edit-competency',
+  components: {
+    default: RouterView,
+    header: EditHeader
+  },
+  meta: {
+    title: { en: 'Edit Competency Matrix', ar: 'تعديل' },
+    hasParent: true,
+    parent: 'competency-matrices',
+    child: true,
+    disabled: true,
+    viewMode: false,
+    mode: PageMode.EDIT
   }
 }
 
@@ -95,7 +122,7 @@ const competencyMatrices = {
     title: { en: 'Competency Matrices', ar: 'مصفوفات الكفاءة' },
     icon: 'cubes-dashboard'
   },
-  children: [coreCompetencies, createCompetencies]
+  children: [coreCompetencies, createCompetencies, editCompetencies]
 }
 
 const routes = [

@@ -1,7 +1,8 @@
 export default {
   common: {
     labels: {
-      name: 'Name'
+      name: 'Name',
+      lastModifiedHeader: 'Last modified'
     },
     placeHolders: {},
     messages: {
@@ -30,12 +31,14 @@ export default {
     noDataListSubTitle: 'You can create a competency matrix to start',
     tableHeaders: {
       name: 'Name',
-      numberOfCompetencies: 'numberOfCompetencies',
+      numberOfCompetencies: 'Number Of Competencies',
       action: 'Action'
     },
     deleteConfirm: {
       confirm: 'Confirm',
       cancel: 'Cancel',
+      add: 'Add',
+      save: 'Save',
       header: 'Delete CompetencyGroup Confirmation',
       body: 'Are you sure you want to delete this competency group item? This action cannot be undone.'
     }

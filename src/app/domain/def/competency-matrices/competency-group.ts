@@ -7,7 +7,7 @@ import { Competency } from './competency'
 export class CompetencyGroup extends Base<ICompetencyGroup, 'id'> implements ICompetencyGroup {
   name!: THashMap<string>
   competenciesCount!: number
-  lastModifiedDateUtc!: string
+  lastModifiedDateUtc!: TNullable<string>
   description!: THashMap<string>
   competencies!: TNullable<ICompetency[]>
   id: TOptional<string>
@@ -16,7 +16,7 @@ export class CompetencyGroup extends Base<ICompetencyGroup, 'id'> implements ICo
       id = uid(),
       name = defaultTranslatableFallback,
       competenciesCount = 0,
-      lastModifiedDateUtc = '',
+      lastModifiedDateUtc = null,
       description = defaultTranslatableFallback,
       competencies = [],
       ...rest

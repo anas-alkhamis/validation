@@ -1,7 +1,8 @@
 export default {
   common: {
     labels: {
-      name: 'الاسم'
+      name: 'الاسم',
+      lastModifiedHeader: 'اخر تعديل'
     },
     placeHolders: {},
     messages: {
@@ -36,7 +37,9 @@ export default {
     deleteConfirm: {
       confirm: 'يتأكد',
       cancel: 'يلغي',
-      header: " تأكيد حذف مجموعة الكفاءة",
+      add: 'أضافة',
+      save: 'Save',
+      header: ' تأكيد حذف مجموعة الكفاءة',
       body: 'هل أنت متأكد أنك تريد حذف عنصر مجموعة الكفاءة؟ لا يمكن التراجع عن هذا الإجراء'
     }
   },
