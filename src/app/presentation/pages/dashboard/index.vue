@@ -1,9 +1,9 @@
 <template>
   <v-card>
     <form @submit.prevent="validateAsync">
-      <v-input-translatable v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.name" label="name" placeholder="Enter name" @keydown="states['name']= ValidationStateEnum.unset"
-      :state="states['name']" :validation-messages="errorMessages.name" /> <v-input v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.age" label="age" placeholder="Enter age"
-      type="number" @keydown="states['age'] = ValidationStateEnum.unset" :state="states['age']" :validation-messages="errorMessages.age" />
+      <v-input-translatable v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.name" label="name" placeholder="Enter name" :state="v.state('name')" @keydown="v.reset('name')"
+      :validation-messages="v.error('name')" /> <v-input v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.age" label="age" placeholder="Enter age" type="number"
+      :state="v.state('age')" :validation-messages="v.error('age')" @keydown="v.reset('age')" />
 
       <v-input
         v-model="controllerDC.model.password"
@@ -11,133 +11,178 @@
         label="password"
         placeholder="Enter password"
         type="password"
-        @keydown="states['password'] = ValidationStateEnum.unset"
-        :state="states['password']"
-        :validation-messages="errorMessages.password"
+        :state="v.state('password')"
+        :validation-messages="v.error('password')"
+        @keydown="v.reset('password')"
       />
       <v-input
         v-model="controllerDC.model.email"
         maxlength="50"
         label="email"
         placeholder="Enter email"
-        type="email"
-        @keydown="states['email'] = ValidationStateEnum.unset"
-        :state="states['email']"
-        :validation-messages="errorMessages.email"
+        :state="v.state('email')"
+        :validation-messages="v.error('email')"
+        @keydown="v.reset('email')"
+      />
+      <v-input
+        v-model="controllerDC.model.info.description"
+        maxlength="50"
+        label="description"
+        placeholder="Enter description"
+        :state="v.state('info.description')"
+        :validation-messages="v.error('info.description')"
+        @keydown="v.reset('info.description')"
       />
       <v-datepicker
         v-model="controllerDC.model.date"
         :placeholder="'pick'"
         label="Single Date"
         format="P"
-        :valid="states['date']"
+        :valid="v.state('date')"
         required
-        :feedback="errorMessages.date[0]"
-        @update:model-value="states['date'] = ValidationStateEnum.unset"
+        :feedback="v.error('date')[0]"
+        @update:model-value="v.reset('date')"
       />
+      <v-button type="submit"> submit</v-button>
+    </form>
 
-      <app-select-picker
-        v-model="controllerDC.model.entity"
-        :tag-props="{ placeholder: 'entity', label: 'labelasdsadsa', required: true }"
-        :list-props="{ fetchOptions: getCompetencyGroupAsync, searchProps: { placeholder: 'searchPlaceholder' } }"
-        :key-mapper="{ uniqueId: 'id', searchableKey: 'name.en' }"
-        no-label
-      >
-        <template #no-data>
-          <slot name="no-data">
-            <div class="m-3"><v-icon :name="['fa', 'info-circle']" class="mr-2 text-muted" fixed-width />{{ 'tGlobal.common.labels.noData' }}</div>
-          </slot>
-        </template>
-      </app-select-picker>
-      <v-enum
-        v-model="checkboxGroup"
-        :enum="{ SizeEnum }"
-        :translation="SizeEnum"
-        :is="EnumControlTypeEnum.select"
-        inline
-        :config-items="{ [SizeEnum.xsmall]: { disabled: true, rank: 1, selected: true }, [SizeEnum.xlarge]: { disabled: true, rank: 1, selected: true } }"
-      />
+    <form v-if="false" @submit.prevent="validateArrayAsync">
+      <div v-for="(field, index) in arrayField">
+        <v-input-translatable v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.name" label="name" placeholder="Enter name" @keydown="vf.resetField(index,'name')"
+        :state="vf.stateField(index,'name')" :validation-messages="vf.errorFiled(index,'name')" /> <v-input v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.age" label="age"
+        placeholder="Enter age" type="number" @keydown="vf.resetField(index,'age')" :state="vf.stateField(index,'age')" :validation-messages="vf.errorFiled(index,'age')" />
+        <v-input
+          v-model="controllerDC.model.info.description"
+          maxlength="50"
+          label="description"
+          placeholder="Enter description"
+          :state="vf.stateField(index, 'info.description')"
+          :validation-messages="vf.errorFiled(index, 'info.description')"
+        />
+        <v-input
+          v-model="controllerDC.model.password"
+          maxlength="50"
+          label="password"
+          placeholder="Enter password"
+          type="password"
+          @keydown="vf.resetField(index, 'password')"
+          :state="vf.stateField(index, 'password')"
+          :validation-messages="vf.errorFiled(index, 'password')"
+        />
+        <v-input
+          v-model="controllerDC.model.email"
+          maxlength="50"
+          label="email"
+          placeholder="Enter email"
+          @keydown="vf.resetField(index, 'email')"
+          :state="vf.stateField(index, 'email')"
+          :validation-messages="vf.errorFiled(index, 'email')"
+        />
+        <v-datepicker
+          v-model="controllerDC.model.date"
+          :placeholder="'pick'"
+          label="Single Date"
+          format="P"
+          :valid="vf.stateField(index, 'date')"
+          required
+          @update:model-value="vf.resetField(index, 'date')"
+          :feedback="vf.errorFiled(index, 'date')[0]"
+        />
+      </div>
       <v-button type="submit"> submit</v-button>
     </form>
   </v-card>
 </template>
 <script lang="ts" setup>
+// multiple forms ?
+// can I use the builder for both forms ?
+
 import { Test } from '@/app/domain/def/competency-matrices/test'
-import { AppContexts } from '@/control'
-import { serviceMap } from '@/service'
-import { IoC, isDate, THashMap } from 'cubes'
-import { DataController, IAppContext, ValidationStateEnum } from 'cubes-ui'
-import { computed, reactive, ref } from 'vue'
+import { Fields, ListFields } from '@/app/domain/def/f'
+import { DataController } from 'cubes-ui'
+import { reactive, ref, watch } from 'vue'
+import { vr, ValidationEnum } from '@/app/domain/def/v-builder'
+////// create schema for validation
+// the schema should be create using single class
+// its hard to define schema
+// find a way to make the validation reactive without using more code
+// merge the DataController and validation in a single operation
 
+const rules = vr.schema({
+  password: [
+    { rule: ValidationEnum.Required, message: 'Password is required' },
+    { rule: ValidationEnum.Password, message: 'Password is too weak' }
+  ],
+  email: [ValidationEnum.Required, { rule: ValidationEnum.Email, message: 'Email must be valid' }],
+  name: [ValidationEnum.Required],
+  age: [ValidationEnum.Required],
+  date: [ValidationEnum.Required],
+  'info.description': [{ rule: ValidationEnum.Required, message: 'Description is required' }]
+})
 
-enum SizeEnum {
-  default = '',
-  xsmall = 'xs',
-  small = 'sm',
-  large = 'lg',
-  xlarge = 'xlg'
-}
-enum EnumControlTypeEnum {
-  radio = 'radio',
-  checkbox = 'checkbox',
-  select = 'select'
-}
-const checkboxGroup = ref()
-const appContext = IoC.DI().resolve<IAppContext>(AppContexts.appContext!),
-  competencyGroup = (appContext!.services as THashMap)[serviceMap.CompetencyGroupService.key]
 const controllerDC = new DataController(Test)
-const states = reactive<{ name?: ValidationStateEnum; age?: ValidationStateEnum; password?: ValidationStateEnum; email?: ValidationStateEnum; date?: ValidationStateEnum; entity?: Object }>({})
-
-const errorMessages = computed(() => ({
-  name: states['name'] == ValidationStateEnum.invalid ? ['error name'] : [],
-  age: states['age'] == ValidationStateEnum.invalid ? ['error age'] : [],
-  password: states['password'] == ValidationStateEnum.invalid ? ['error password'] : [],
-  email: states['email'] == ValidationStateEnum.invalid ? ['error email'] : [],
-  date: states['date'] == ValidationStateEnum.invalid ? ['error date'] : []
-}))
-const validateTranslatable = (value: THashMap<string>, multiLanguage?: boolean): boolean => {
-  switch (multiLanguage) {
-    case true:
-      return !!value.en && !!value.en.trim().length && !!value.ar && !!value.ar.trim().length
-    default:
-      return (!!value.en && !!value.en.trim().length) || (!!value.ar && !!value.ar.trim().length)
+const v = reactive(new Fields(rules))
+const vf = reactive(new ListFields(rules))
+const arrayField = [
+  {
+    name: { en: 'test', ar: 'test' },
+    age: '18',
+    email: 'email',
+    password: 'passwordA@2',
+    date: '',
+    info: {
+      description: ''
+    }
+  },
+  {
+    name: 'name',
+    age: '12',
+    email: 'email',
+    password: 'password',
+    date: 'date',
+    info: {
+      description: ''
+    }
+  },
+  {
+    name: 'name',
+    age: '22',
+    email: 'email',
+    password: 'password',
+    date: 'date',
+    info: {
+      description: ''
+    }
+  },
+  {
+    name: 'name',
+    age: '8',
+    email: 'email',
+    password: 'password',
+    date: '',
+    info: {
+      description: 'aa'
+    }
   }
-}
+]
+const isValid = ref()
 const validateAsync = (): Promise<boolean> => {
   return new Promise(async (res, _rej) => {
-    let validity = true
-
-    const valid = ValidationStateEnum.valid
-    const invalid = ValidationStateEnum.invalid
-
-    const name = validateTranslatable(controllerDC.model.name, true)
-    states['name'] = name ? valid : invalid
-    validity = validity && name
-    const age = controllerDC.model.age >= 18
-    states['age'] = age ? valid : invalid
-    validity = validity && age
-    const password = controllerDC.model.password.length >= 8
-    states['password'] = password ? valid : invalid
-    validity = validity && password
-    const email = controllerDC.model.email.includes('@')
-    states['email'] = email ? valid : invalid
-    validity = validity && email
-    const date = isDate(controllerDC.model.date)
-
-    states['date'] = date ? valid : invalid
-    validity = validity && date
-    res(validity)
+    isValid.value = v.validate(controllerDC.model)
+    // console.log(v)
   })
 }
-const getCompetencyGroupAsync = (f = {} as any) =>
-  new Promise(async (res, rej) => {
-    try {
-      const result = await competencyGroup.listAsync({ limit: 10, offset: 0, ...f })
-
-      res(result)
-    } catch (e) {
-      rej(e)
-    }
+const validateArrayAsync = (): Promise<boolean> => {
+  return new Promise(async (res, _rej) => {
+    isValid.value = vf.validateFields(arrayField)
+    // console.log(v)
   })
-// defineExpose({ validateAsync })
+}
+watch(
+  () => controllerDC.model,
+  () => {
+    v.track('password', controllerDC.model)
+  },
+  { deep: true }
+)
 </script>

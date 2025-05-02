@@ -18,8 +18,9 @@ export class Test extends Base<ITest, 'id'> implements ITest {
   email!: string
   date!: TNullable<string>
   entity!: TOptional<Object>
+  info!: { description: string }
 
-  deserialize({ name = defaultTranslatableFallback, age = 0, password = '', email = '', date = null, id = uid(), entity, ...rest } = {} as Partial<ITest>) {
+  deserialize({ name = defaultTranslatableFallback, age = 0, password = '', email = '', date = null, id = uid(), entity, info = { description: '' }, ...rest } = {} as Partial<ITest>) {
     super.deserialize(rest)
     this.name = clone(name ?? defaultTranslatableFallback, true)
     this.age = age
@@ -28,5 +29,6 @@ export class Test extends Base<ITest, 'id'> implements ITest {
     this.date = date
     this.id = id
     this.entity = entity
+    this.info = info
   }
 }
