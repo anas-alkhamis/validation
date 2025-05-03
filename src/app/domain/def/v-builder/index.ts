@@ -11,7 +11,6 @@ enum ValidationEnum {
 const vr = new ValidationRule()
 
 vr.setGeneralRule(ValidationEnum.Required, 'Field is Required', (value, parent, validator, index) => {
-  console.log(value, typeof value)
   if (value instanceof Date) return true
   if (isArray(value) && !value?.length) return false
   else if (isObj(value) && !value.en && !value.ar) return false

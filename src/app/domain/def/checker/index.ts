@@ -1,15 +1,12 @@
 export function hasValueChanged(oldVal: unknown, newVal: unknown): boolean {
-  // Handle null/undefined cases
-  console.log(typeof oldVal, typeof newVal)
 
-  if ((newVal == null || newVal == '') && (newVal == null || newVal == '')) {
+  if ((newVal == null || newVal == '') && (oldVal == null || oldVal == '')) {
     return false
   }
   if (oldVal == null || newVal == null) {
     return oldVal !== newVal
   }
 
-  // Handle undefined comparison
   if (oldVal === undefined || newVal === undefined) {
     return oldVal !== newVal
   }

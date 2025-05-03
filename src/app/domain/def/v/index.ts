@@ -1,23 +1,36 @@
-import { type THashMap } from 'cubes'
-import { IValidationResult, TMethod, TRules, TRulesItem, ValidationRuleEnum, type TRule } from './meta/types'
+import { TOptional, type THashMap } from 'cubes'
+import { IValidationResult, TMethod, TRulesItem, ValidationRuleEnum, type TRule } from './meta/types'
 
+export enum MessageTypeEnum {
+  Error = 1,
+  Warning,
+  Success
+}
+type RuleObject = {
+  rule: TMethod
+  message: TOptional<string>
+  type: MessageTypeEnum
+}
 export type SchemaRule = Partial<
   | {
       rule: string
       message: string
+      type: MessageTypeEnum
     }
   | string
 >
-export type RuleSchema = { [key: string]: { rule: TMethod; message?: string }[] }
+export type RuleSchema = { [key: string]: RuleObject[] }
 type TSchema = SchemaRule[]
+// setRuleAsync a function that debounce changes params function and delay
 class ValidationRule {
   private rules: THashMap<TRulesItem> = {}
-  private static readonly v = new ValidationRule()
+  private static v: ValidationRule
   constructor() {
     if (ValidationRule.v) {
       ValidationRule.v._clearCustomRules(ValidationRule.v.rules)
+      return ValidationRule.v
     }
-    return ValidationRule.v
+    ValidationRule.v = this
   }
   setRule(key: string, message: string, fn: TRule) {
     const rule = (value: any, parent: any, validator: Object, index?: number): IValidationResult => {
@@ -46,7 +59,7 @@ class ValidationRule {
       ruleSchema[key] = []
       for (const config of schema[key]) {
         if (typeof config == 'object') {
-          ruleSchema[key].push(this._rule(config?.rule!, config.message))
+          ruleSchema[key].push(this._rule(config?.rule!, config.message, config.type))
         }
         if (typeof config == 'string') {
           ruleSchema[key].push(this._rule(config))
@@ -55,11 +68,10 @@ class ValidationRule {
     }
     return ruleSchema
   }
-  _rule(ruleName: string, message?: string): any {
-    return { rule: this.rules[ruleName]['rule'], message }
+  private _rule(ruleName: string, message?: string, type = MessageTypeEnum.Error): RuleObject {
+    return { rule: this.rules[ruleName]['rule'], message, type }
   }
-
-  _clearCustomRules(rules: any) {
+  private _clearCustomRules(rules: any) {
     for (const key in rules) {
       if (this.rules[key]['state'] == ValidationRuleEnum.Custom) {
         delete this.rules[key]

@@ -1,9 +1,16 @@
 import { THashMap } from 'cubes'
+import { MessageTypeEnum } from '..'
 
 enum StateEnum {
   unset = '',
   valid = 'valid',
   invalid = 'invalid'
+}
+enum ValidationStateEnum {
+  None,
+  Success,
+  Error,
+  Warning
 }
 
 interface IValidationResult {
@@ -21,7 +28,7 @@ type TRulesItem = { rule: TMethod; state: ValidationRuleEnum }
 type IFieldValidationState = {
   state: StateEnum
   valid: boolean
-  messages: string[]
+  messages: { text: string; type: MessageTypeEnum }[]
 }
 
 type ISchema = {
@@ -29,5 +36,5 @@ type ISchema = {
   messages?: THashMap<string[]>
 }
 
-export type { IValidationResult, TRule, TRules, ISchema, IFieldValidationState, TMethod,TRulesItem }
-export { StateEnum ,ValidationRuleEnum}
+export type { IValidationResult, TRule, TRules, ISchema, IFieldValidationState, TMethod, TRulesItem }
+export { StateEnum, ValidationRuleEnum, ValidationStateEnum }
