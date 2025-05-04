@@ -148,7 +148,7 @@ class ListFields extends FieldsBase {
     if (messageType == MessageTypeEnum.Warning) this.statuses[index][key].hasWarning = true
   }
 
-  validateFields(data: THashMap<any>[], multipleMessage?: boolean): boolean {
+  validate(data: THashMap<any>[], multipleMessage?: boolean): boolean {
     let isValidArray = true
     data.forEach((obj, index) => {
       const states: THashMap<IFieldValidationState> = {}
