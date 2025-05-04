@@ -16,7 +16,7 @@
         @keyup="v.track('password', controllerDC.model)"
       />
       <span v-if="v.statuses.password?.hasWarning" class="text-warning">
-        {{ v.message('password', MessageTypeEnum.Warning).map(m=> m.text)}}
+        {{ v.message('password', MessageTypeEnum.Warning).map(m => m.text) }}
       </span>
       <v-input
         v-model="controllerDC.model.email"
@@ -51,16 +51,16 @@
 
     <form v-if="false" @submit.prevent="validateArrayAsync">
       <div v-for="(field, index) in arrayField">
-        <v-input-translatable v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.name" label="name" placeholder="Enter name" @keydown="vf.resetField(index,'name')"
-        :state="vf.stateField(index,'name')" :validation-messages="vf.messageFiled(index,'name')" /> <v-input v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.age" label="age"
-        placeholder="Enter age" type="number" @keydown="vf.resetField(index,'age')" :state="vf.stateField(index,'age')" :validation-messages="vf.messageFiled(index,'age')" />
+        <v-input-translatable v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.name" label="name" placeholder="Enter name" @keydown="vf.reset('name',index)"
+        :state="vf.state('name',index,)" :validation-messages="vf.validationMessages('name',index)" /> <v-input v-auto-focus:['.form-control'] maxlength="50" v-model="controllerDC.model.age"
+        label="age" placeholder="Enter age" type="number" @keydown="vf.reset('age',index)" :state="vf.state('age',index)" :validation-messages="vf.validationMessages('age',index)" />
         <v-input
           v-model="controllerDC.model.info.description"
           maxlength="50"
           label="description"
           placeholder="Enter description"
-          :state="vf.stateField(index, 'info.description')"
-          :validation-messages="vf.messageFiled(index, 'info.description')"
+          :state="vf.state('info.description', index)"
+          :validation-messages="vf.validationMessages('info.description', index)"
         />
         <v-input
           v-model="controllerDC.model.password"
@@ -68,28 +68,28 @@
           label="password"
           placeholder="Enter password"
           type="password"
-          @keydown="vf.resetField(index, 'password')"
-          :state="vf.stateField(index, 'password')"
-          :validation-messages="vf.messageFiled(index, 'password')"
+          @keydown="vf.reset('password', index)"
+          :state="vf.state('password', index)"
+          :validation-messages="vf.message('password', index)"
         />
         <v-input
           v-model="controllerDC.model.email"
           maxlength="50"
           label="email"
           placeholder="Enter email"
-          @keydown="vf.resetField(index, 'email')"
-          :state="vf.stateField(index, 'email')"
-          :validation-messages="vf.messageFiled(index, 'email')"
+          @keydown="vf.reset('email', index)"
+          :state="vf.state('email', index)"
+          :validation-messages="vf.validationMessages('email', index)"
         />
         <v-datepicker
           v-model="controllerDC.model.date"
           :placeholder="'pick'"
           label="Single Date"
           format="P"
-          :valid="vf.stateField(index, 'date')"
+          :valid="vf.state('date', index)"
           required
-          @update:model-value="vf.resetField(index, 'date')"
-          :feedback="vf.messageFiled(index, 'date')[0]"
+          @update:model-value="vf.reset('date', index)"
+          :feedback="vf.message('date', index)[0]"
         />
       </div>
       <v-button type="submit"> submit</v-button>
@@ -113,7 +113,7 @@ const rules = vr.schema({
   name: [ValidationEnum.Required],
   age: [ValidationEnum.Required],
   date: [ValidationEnum.Required],
-  'info.description': [{ rule: ValidationEnum.Required, message: 'Description is required', type: MessageTypeEnum.Success }]
+  'info.description': [{ rule: ValidationEnum.Required, message: 'Description is required'/* , type: MessageTypeEnum.Success */ }]
 })
 
 const controllerDC = new DataController(Test)

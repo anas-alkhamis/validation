@@ -5,12 +5,12 @@ enum ValidationEnum {
   Required = 'required',
   Password = 'password',
   Email = 'email',
-  GG = 'GG'
+  // GG = 'GG'
 }
 
 const vr = new ValidationRule()
 
-vr.setGeneralRule(ValidationEnum.Required, 'Field is Required', (value, parent, validator, index) => {
+vr.setGeneralRule(ValidationEnum.Required, 'Field is Required', (value, parent, index) => {
   if (value instanceof Date) return true
   if (isArray(value) && !value?.length) return false
   else if (isObj(value) && !value.en && !value.ar) return false

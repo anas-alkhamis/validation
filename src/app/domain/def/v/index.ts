@@ -22,6 +22,7 @@ export type SchemaRule = Partial<
 export type RuleSchema = { [key: string]: RuleObject[] }
 type TSchema = SchemaRule[]
 // setRuleAsync a function that debounce changes params function and delay
+// change the rules from object to array
 class ValidationRule {
   private rules: THashMap<TRulesItem> = {}
   private static v: ValidationRule

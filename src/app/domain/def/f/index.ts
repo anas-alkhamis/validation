@@ -1,7 +1,6 @@
 import { THashMap } from 'cubes'
 import { IFieldValidationState, StateEnum } from '../v/meta/types'
 import { IValidationResult } from '../v/meta/types'
-import { hasValueChanged } from '../checker'
 import { MessageTypeEnum, RuleSchema } from '../v'
 
 // validate tree data structure
@@ -10,8 +9,6 @@ import { MessageTypeEnum, RuleSchema } from '../v'
 class FieldsBase {
   protected fieldFallBack: IFieldValidationState
   protected schema: RuleSchema
-  public statuses: { [key: string]: { hasError: boolean; hasSuccess: boolean; hasWarning: boolean } } = {}
-  protected previousValue: any = {}
   constructor(schema: RuleSchema) {
     this.schema = schema
     this.fieldFallBack = {
@@ -28,19 +25,21 @@ class FieldsBase {
     }
     return currentValue
   }
+}
+class Fields extends FieldsBase {
+  private states: THashMap<IFieldValidationState> = {}
+  public statuses: { [key: string]: { hasError: boolean; hasSuccess: boolean; hasWarning: boolean } } = {}
+
+  constructor(schema: RuleSchema) {
+    super(schema)
+  }
 
   _setStatus(key: string, messageType: MessageTypeEnum) {
     if (messageType == MessageTypeEnum.Error) this.statuses[key].hasError = true
     if (messageType == MessageTypeEnum.Success) this.statuses[key].hasSuccess = true
     if (messageType == MessageTypeEnum.Warning) this.statuses[key].hasWarning = true
   }
-}
-class Fields extends FieldsBase {
-  private states: THashMap<IFieldValidationState> = {}
-  constructor(schema: RuleSchema) {
-    super(schema)
-  }
-  validate(data: THashMap<any>): boolean {
+  validate(data: THashMap<any>, multipleMessage?: boolean): boolean {
     let isValid = true
     for (const key in this.schema) {
       const fieldState: IFieldValidationState = {
@@ -54,53 +53,65 @@ class Fields extends FieldsBase {
       for (let idx = 0; idx < rules.length; idx++) {
         const vr = rules[idx]
         const result: IValidationResult = vr.rule(currentValue, data, this)
+        const message = vr.message || result.message
         if (!result.valid && vr.type == MessageTypeEnum.Error) {
           isValid = false
           fieldState.valid = false
           fieldState.state = StateEnum.invalid
-        }
-
-        if ((vr.message || result.message) && !result.valid) {
-          fieldState.messages.push({ text: vr.message || result.message || '', type: vr.type })
+          fieldState.messages.push({ text: message, type: vr.type })
           this._setStatus(key, vr.type)
         }
+        if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+          fieldState.messages.push({ text: message, type: vr.type })
+          this._setStatus(key, vr.type)
+        }
+        if (vr.type == MessageTypeEnum.Success && result.valid) {
+          fieldState.messages.push({ text: message, type: vr.type })
+          this._setStatus(key, vr.type)
+        }
+        if (!multipleMessage && fieldState.messages.length) {
+          break
+        }
       }
-      this.previousValue[key] = currentValue
       this.states[key] = fieldState
     }
 
     return isValid
   }
 
-  track(key: string, data: THashMap<any>): boolean {
+  track(key: string, data: THashMap<any>, multipleMessage?: boolean): boolean {
     const fieldState: IFieldValidationState = {
       state: StateEnum.valid,
       valid: true,
       messages: []
     }
-    const currentValue = this._getDeepValue(data, key)
-    const isChanged = hasValueChanged(this.previousValue[key], currentValue)
-    if (!isChanged) {
-      this.previousValue[key] = currentValue
-      return !!this.states[key]?.valid
-    }
+
     const rules = this.schema[key].sort((a, b) => a.type - b.type)
     this.statuses[key] = { hasError: false, hasSuccess: false, hasWarning: false }
     for (let idx = 0; idx < rules.length; idx++) {
       const vr = rules[idx]
       const result: IValidationResult = vr.rule(this._getDeepValue(data, key), data, this)
+      const message = vr.message || result.message
       if (!result.valid && vr.type == MessageTypeEnum.Error) {
         fieldState.valid = false
         fieldState.state = StateEnum.invalid
-      }
-      if ((vr.message || result.message) && !result.valid) {
-        fieldState.messages.push({ text: vr.message || result.message || '', type: vr.type })
+        fieldState.messages.push({ text: message, type: vr.type })
         this._setStatus(key, vr.type)
       }
-    }
-    console.log(this.statuses[key])
 
-    this.previousValue[key] = currentValue
+      if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+        fieldState.messages.push({ text: message, type: vr.type })
+        this._setStatus(key, vr.type)
+      }
+      if (vr.type == MessageTypeEnum.Success && result.valid) {
+        fieldState.messages.push({ text: message, type: vr.type })
+        this._setStatus(key, vr.type)
+      }
+      if (!multipleMessage && fieldState.messages.length) {
+        break
+      }
+    }
+
     this.states[key] = fieldState
     return fieldState.valid
   }
@@ -125,45 +136,57 @@ class Fields extends FieldsBase {
 
 class ListFields extends FieldsBase {
   private states: THashMap<IFieldValidationState>[] = []
+  public statuses: { [key: string]: { hasError: boolean; hasSuccess: boolean; hasWarning: boolean } }[] = []
+
   constructor(schema: RuleSchema) {
     super(schema)
+  }
+
+  _setStatus(key: string, index: number, messageType: MessageTypeEnum) {
+    if (messageType == MessageTypeEnum.Error) this.statuses[index][key].hasError = true
+    if (messageType == MessageTypeEnum.Success) this.statuses[index][key].hasSuccess = true
+    if (messageType == MessageTypeEnum.Warning) this.statuses[index][key].hasWarning = true
   }
 
   validateFields(data: THashMap<any>[], multipleMessage?: boolean): boolean {
     let isValidArray = true
     data.forEach((obj, index) => {
       const states: THashMap<IFieldValidationState> = {}
+      this.statuses[index] = {}
+
       for (const key in this.schema) {
-        const state: IFieldValidationState = {
+        this.statuses[index][key] = { hasError: false, hasSuccess: false, hasWarning: false }
+        const fieldState: IFieldValidationState = {
           state: StateEnum.valid,
           valid: true,
           messages: []
         }
-        const currentValue = this._getDeepValue(obj, key)
-        const isChanged = this.previousValue.hasOwnProperty(key) ? hasValueChanged(this.previousValue[key], currentValue) : false
-        if (!isChanged) {
-          this.previousValue[key] = currentValue
-          break
-        }
+        const result: IValidationResult = this._getDeepValue(obj, key)
         const rules = this.schema[key].sort((a, b) => a.type - b.type)
 
         for (let idx = 0; idx < rules.length; idx++) {
           const vr = rules[idx]
-          const result: IValidationResult = vr.rule(currentValue, data, this, index)
-          if (!result.valid) {
-            state.valid = false
-            state.state = StateEnum.invalid
-            state.messages.push({ text: vr.message || result.message || '', type: vr.type })
-            if (isValidArray) {
-              isValidArray = false
-            }
-            if (!multipleMessage) {
-              break
-            }
+          const message = vr.message || result.message
+          if (!result.valid && vr.type == MessageTypeEnum.Error) {
+            fieldState.valid = false
+            fieldState.state = StateEnum.invalid
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, index, vr.type)
+          }
+
+          if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, index, vr.type)
+          }
+          if (vr.type == MessageTypeEnum.Success && result.valid) {
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, index, vr.type)
+          }
+          if (!multipleMessage && fieldState.messages.length) {
+            break
           }
         }
-        this.previousValue[key] = currentValue
-        states[key] = state
+        states[key] = fieldState
       }
       this.states[index] = states
     })
@@ -171,46 +194,59 @@ class ListFields extends FieldsBase {
     return isValidArray
   }
 
-  trackFiled(key: string, index: number, data: THashMap<any>): boolean {
-    const state: IFieldValidationState = {
+  track(key: string, index: number, data: THashMap<any>, multipleMessage?: boolean): boolean {
+    const fieldState: IFieldValidationState = {
       state: StateEnum.valid,
       valid: true,
       messages: []
     }
-    const currentValue = this._getDeepValue(data[index], key)
-    const isChanged = hasValueChanged(this.previousValue[key], currentValue)
-    if (!isChanged) {
-      this.previousValue[key] = currentValue
-      return this.states[index][key].valid
-    }
+
     const rules = this.schema[key].sort((a, b) => a.type - b.type)
 
     for (let idx = 0; idx < rules.length; idx++) {
       const vr = rules[idx]
-      const result: IValidationResult = vr.rule(currentValue, data, this, index)
-      if (!result.valid) {
-        state.valid = false
-        state.state = StateEnum.invalid
-        state.messages.push({ text: vr.message || result.message || '', type: vr.type })
+      const result: IValidationResult = vr.rule(this._getDeepValue(data[index], key), data, this)
+      const message = vr.message || result.message
+      if (!result.valid && vr.type == MessageTypeEnum.Error) {
+        fieldState.valid = false
+        fieldState.state = StateEnum.invalid
+        fieldState.messages.push({ text: message, type: vr.type })
+        this._setStatus(key, index, vr.type)
+      }
+
+      if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+        fieldState.messages.push({ text: message, type: vr.type })
+        this._setStatus(key, index, vr.type)
+      }
+      if (vr.type == MessageTypeEnum.Success && result.valid) {
+        fieldState.messages.push({ text: message, type: vr.type })
+        this._setStatus(key, index, vr.type)
+      }
+      if (!multipleMessage && fieldState.messages.length) {
+        break
       }
     }
-    this.previousValue[key] = currentValue
-    this.states[index][key] = state
+    this.states[index][key] = fieldState
 
-    return !!state.valid
+    return fieldState.valid
+  }
+  validationMessages(field: string, index: number) {
+    if (this.states[index]?.[field]?.state == StateEnum.invalid) {
+      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Error).map(m => m.text) || '' : this.fieldFallBack.messages
+    } else if (this.states[index]?.[field]?.state == StateEnum.valid) {
+      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Success).map(m => m.text) || '' : this.fieldFallBack.messages
+    }
+    return this.fieldFallBack.messages
+  }
+  message(field: string, index: number, type?: MessageTypeEnum) {
+    return this.states[index]?.[field] ? (type ? this.states[index][field]?.messages.filter(m => m.type == type) : this.states[index][field]?.messages || '') : this.fieldFallBack.messages
   }
 
-  messageFiled(index: number, field: string, type = MessageTypeEnum.Error) {
-    return this.states.length && this.states[index]?.[field]
-      ? this.states[index][field]?.messages.filter(m => m.type == type).map(m => m.text) || this.fieldFallBack.messages
-      : this.fieldFallBack.messages
-  }
-
-  stateField(index: number, field: string) {
+  state(field: string, index: number) {
     return this.states.length && this.states[index]?.[field] ? this.states[index][field]?.state || StateEnum.unset : this.fieldFallBack.state
   }
 
-  resetField(index: number, field: string): void {
+  reset(field: string, index: number): void {
     if (!this.states[index]?.[field]) return
     this.states[index][field] = this.fieldFallBack
   }
