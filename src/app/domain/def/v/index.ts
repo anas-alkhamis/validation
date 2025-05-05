@@ -1,28 +1,6 @@
-import { TOptional, type THashMap } from 'cubes'
-import { IValidationResult, TMethod, TRulesItem, ValidationRuleEnum, type TRule } from './meta/types'
+import { type THashMap } from 'cubes'
+import { TValidationResult, MessageTypeEnum, TRuleObject, TRuleSchema, TRulesItem, TSchema, ValidationRuleEnum, type TRule } from './meta/types'
 
-export enum MessageTypeEnum {
-  Error = 1,
-  Warning,
-  Success
-}
-type RuleObject = {
-  rule: TMethod
-  message: TOptional<string>
-  type: MessageTypeEnum
-}
-export type SchemaRule = Partial<
-  | {
-      rule: string
-      message: string
-      type: MessageTypeEnum
-    }
-  | string
->
-export type RuleSchema = { [key: string]: RuleObject[] }
-type TSchema = SchemaRule[]
-// setRuleAsync a function that debounce changes params function and delay
-// change the rules from object to array
 class ValidationRule {
   private rules: THashMap<TRulesItem> = {}
   private static v: ValidationRule
@@ -33,29 +11,32 @@ class ValidationRule {
     }
     ValidationRule.v = this
   }
-  setRule(key: string, message: string, fn: TRule) {
-    const rule = (value: any, parent: any, validator: Object, index?: number): IValidationResult => {
-      const valid = fn(value, parent, validator, index)
+  setRule(key: string, message: THashMap<string>, fn: TRule) {
+    if (this.rules.hasOwnProperty(key) && this.rules[key]?.state == ValidationRuleEnum.General) {
+      throw new Error('Custom rules are not allowed to override general rules.')
+    }
+    const rule = (value: any, parent: any, index?: number): TValidationResult => {
+      const valid = fn(value, parent, index)
       return {
         valid,
-        message: valid ? '' : message
+        message
       }
     }
     this.rules[key] = { rule, state: ValidationRuleEnum.Custom }
   }
-  setGeneralRule(key: string, message: string, fn: TRule) {
-    const rule = (value: any, parent: any, validator: Object, index?: number): IValidationResult => {
-      const valid = fn(value, parent, validator, index)
+  setGeneralRule(key: string, message: THashMap<string>, fn: TRule) {
+    const rule = (value: any, parent: any, index?: number): TValidationResult => {
+      const valid = fn(value, parent, index)
       return {
         valid,
-        message: valid ? '' : message
+        message
       }
     }
     this.rules[key] = { rule, state: ValidationRuleEnum.General }
   }
 
   schema(schema: THashMap<TSchema>) {
-    const ruleSchema: RuleSchema = {}
+    const ruleSchema: TRuleSchema = {}
     for (const key in schema) {
       ruleSchema[key] = []
       for (const config of schema[key]) {
@@ -69,7 +50,7 @@ class ValidationRule {
     }
     return ruleSchema
   }
-  private _rule(ruleName: string, message?: string, type = MessageTypeEnum.Error): RuleObject {
+  private _rule(ruleName: string, message?: THashMap<string>, type = MessageTypeEnum.Error): TRuleObject {
     return { rule: this.rules[ruleName]['rule'], message, type }
   }
   private _clearCustomRules(rules: any) {

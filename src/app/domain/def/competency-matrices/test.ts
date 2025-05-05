@@ -8,6 +8,7 @@ export interface ITest extends TSerializable<TIdentifieable<{ id: TOptional<stri
   email: string
   date: TNullable<string>
   entity: TOptional<Object>
+  info: { description: string }
 }
 
 export class Test extends Base<ITest, 'id'> implements ITest {
@@ -30,5 +31,13 @@ export class Test extends Base<ITest, 'id'> implements ITest {
     this.id = id
     this.entity = entity
     this.info = info
+  }
+}
+
+export class ListTest extends Base<any, 'id'> {
+  data!: ITest[]
+
+  deserialize({ data = [] }) {
+    this.data = data.map(d => new Test(d))
   }
 }

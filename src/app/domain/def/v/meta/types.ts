@@ -1,5 +1,4 @@
-import { THashMap } from 'cubes'
-import { MessageTypeEnum } from '..'
+import { THashMap, TOptional } from 'cubes'
 
 enum StateEnum {
   unset = '',
@@ -10,31 +9,57 @@ enum ValidationStateEnum {
   None,
   Success,
   Error,
-  Warning
+  WarningW
+}
+export enum MessageTypeEnum {
+  Error = 1,
+  Warning,
+  Success
 }
 
-interface IValidationResult {
-  valid: boolean
-  message: string
-}
 enum ValidationRuleEnum {
   General,
   Custom
 }
-type TRule = (value: any, parent: Record<string, any>, validator: Object, index?: number) => boolean
-type TMethod = (value: any, parent: Record<string, any>, validator: Object, index?: number) => IValidationResult
+
+interface TValidationResult {
+  valid: boolean
+  message: THashMap<string>
+}
+type TMethod = (value: any, parent: Record<string, any>, index?: number) => TValidationResult
 type TRules = TMethod[]
 type TRulesItem = { rule: TMethod; state: ValidationRuleEnum }
-type IFieldValidationState = {
+type TRule = (value: any, parent: Record<string, any>, index?: number) => boolean
+
+type TFieldValidationState = {
   state: StateEnum
   valid: boolean
-  messages: { text: string; type: MessageTypeEnum }[]
+  messages: { text: THashMap<string>; type: MessageTypeEnum }[]
 }
 
-type ISchema = {
+type TSchemaItem = {
   rules: THashMap<TRules>
-  messages?: THashMap<string[]>
+  messages: THashMap<string[]>
 }
 
-export type { IValidationResult, TRule, TRules, ISchema, IFieldValidationState, TMethod, TRulesItem }
+type TRuleObject = {
+  rule: TMethod
+  message: TOptional<THashMap<string>>
+  type: MessageTypeEnum
+}
+
+type TSchemaRule = Partial<
+  | {
+      rule: string
+      message: THashMap<string>
+      type: MessageTypeEnum
+    }
+  | string
+>
+
+type TRuleSchema = { [key: string]: TRuleObject[] }
+
+type TSchema = TSchemaRule[]
+
+export type { TValidationResult, TRule, TSchema, TFieldValidationState, TMethod, TRulesItem, TRuleObject, TRuleSchema, TSchemaItem }
 export { StateEnum, ValidationRuleEnum, ValidationStateEnum }

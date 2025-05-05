@@ -1,15 +1,16 @@
-import { THashMap } from 'cubes'
-import { IFieldValidationState, StateEnum } from '../v/meta/types'
-import { IValidationResult } from '../v/meta/types'
-import { MessageTypeEnum, RuleSchema } from '../v'
+import { IoC, THashMap } from 'cubes'
+import { TFieldValidationState, MessageTypeEnum, TRuleSchema, StateEnum, TValidationResult } from '../v/meta/types'
+import { IFields, IFieldsBase, IListFields } from './meta/types'
+import { IAppService } from 'cubes-ui'
+import { serviceMap } from '@/service'
 
 // validate tree data structure
 // handel errors
 
-class FieldsBase {
-  protected fieldFallBack: IFieldValidationState
-  protected schema: RuleSchema
-  constructor(schema: RuleSchema) {
+class FieldsBase implements IFieldsBase {
+  fieldFallBack: TFieldValidationState
+  schema: TRuleSchema
+  constructor(schema: TRuleSchema) {
     this.schema = schema
     this.fieldFallBack = {
       state: StateEnum.unset,
@@ -26,11 +27,11 @@ class FieldsBase {
     return currentValue
   }
 }
-class Fields extends FieldsBase {
-  private states: THashMap<IFieldValidationState> = {}
+class Fields extends FieldsBase implements IFields {
+  private states: THashMap<TFieldValidationState> = {}
   public statuses: { [key: string]: { hasError: boolean; hasSuccess: boolean; hasWarning: boolean } } = {}
 
-  constructor(schema: RuleSchema) {
+  constructor(schema: TRuleSchema) {
     super(schema)
   }
 
@@ -39,92 +40,112 @@ class Fields extends FieldsBase {
     if (messageType == MessageTypeEnum.Success) this.statuses[key].hasSuccess = true
     if (messageType == MessageTypeEnum.Warning) this.statuses[key].hasWarning = true
   }
-  validate(data: THashMap<any>, multipleMessage?: boolean): boolean {
-    let isValid = true
-    for (const key in this.schema) {
-      const fieldState: IFieldValidationState = {
-        state: StateEnum.valid,
-        valid: true,
-        messages: []
-      }
-      const currentValue = this._getDeepValue(data, key)
-      const rules = this.schema[key].sort((a, b) => a.type - b.type)
-      this.statuses[key] = { hasError: false, hasSuccess: false, hasWarning: false }
-      for (let idx = 0; idx < rules.length; idx++) {
-        const vr = rules[idx]
-        const result: IValidationResult = vr.rule(currentValue, data, this)
-        const message = vr.message || result.message
-        if (!result.valid && vr.type == MessageTypeEnum.Error) {
-          isValid = false
-          fieldState.valid = false
-          fieldState.state = StateEnum.invalid
-          fieldState.messages.push({ text: message, type: vr.type })
-          this._setStatus(key, vr.type)
+  validate(data: THashMap<any>, multipleMessage?: boolean): Promise<boolean> {
+    return new Promise((res, rej) => {
+      try {
+        let isValid = true
+        for (const key in this.schema) {
+          const fieldState: TFieldValidationState = {
+            state: StateEnum.valid,
+            valid: true,
+            messages: []
+          }
+          const currentValue = this._getDeepValue(data, key)
+          const rules = this.schema[key].sort((a, b) => a.type - b.type)
+          this.statuses[key] = { hasError: false, hasSuccess: false, hasWarning: false }
+          for (let idx = 0; idx < rules.length; idx++) {
+            const vr = rules[idx]
+            const result: TValidationResult = vr.rule(currentValue, data)
+            const message = vr.message || result.message
+            if (!result.valid && vr.type == MessageTypeEnum.Error) {
+              isValid = false
+              fieldState.valid = false
+              fieldState.state = StateEnum.invalid
+              fieldState.messages.push({ text: message, type: vr.type })
+              this._setStatus(key, vr.type)
+            }
+            if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+              fieldState.messages.push({ text: message, type: vr.type })
+              this._setStatus(key, vr.type)
+            }
+            if (vr.type == MessageTypeEnum.Success && result.valid) {
+              fieldState.messages.push({ text: message, type: vr.type })
+              this._setStatus(key, vr.type)
+            }
+            if (!multipleMessage && fieldState.messages.length) {
+              break
+            }
+          }
+          this.states[key] = fieldState
         }
-        if (vr.type == MessageTypeEnum.Warning && !result.valid) {
-          fieldState.messages.push({ text: message, type: vr.type })
-          this._setStatus(key, vr.type)
-        }
-        if (vr.type == MessageTypeEnum.Success && result.valid) {
-          fieldState.messages.push({ text: message, type: vr.type })
-          this._setStatus(key, vr.type)
-        }
-        if (!multipleMessage && fieldState.messages.length) {
-          break
-        }
-      }
-      this.states[key] = fieldState
-    }
 
-    return isValid
+        res(isValid)
+      } catch (error) {
+        rej(error)
+      }
+    })
   }
 
-  track(key: string, data: THashMap<any>, multipleMessage?: boolean): boolean {
-    const fieldState: IFieldValidationState = {
-      state: StateEnum.valid,
-      valid: true,
-      messages: []
-    }
+  track(key: string, data: THashMap<any>, multipleMessage?: boolean): Promise<boolean> {
+    return new Promise((res, rej) => {
+      try {
+        const fieldState: TFieldValidationState = {
+          state: StateEnum.valid,
+          valid: true,
+          messages: []
+        }
 
-    const rules = this.schema[key].sort((a, b) => a.type - b.type)
-    this.statuses[key] = { hasError: false, hasSuccess: false, hasWarning: false }
-    for (let idx = 0; idx < rules.length; idx++) {
-      const vr = rules[idx]
-      const result: IValidationResult = vr.rule(this._getDeepValue(data, key), data, this)
-      const message = vr.message || result.message
-      if (!result.valid && vr.type == MessageTypeEnum.Error) {
-        fieldState.valid = false
-        fieldState.state = StateEnum.invalid
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, vr.type)
-      }
+        const rules = this.schema[key].sort((a, b) => a.type - b.type)
+        this.statuses[key] = { hasError: false, hasSuccess: false, hasWarning: false }
+        for (let idx = 0; idx < rules.length; idx++) {
+          const vr = rules[idx]
+          const result: TValidationResult = vr.rule(this._getDeepValue(data, key), data)
+          const message = vr.message || result.message
+          if (!result.valid && vr.type == MessageTypeEnum.Error) {
+            fieldState.valid = false
+            fieldState.state = StateEnum.invalid
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, vr.type)
+          }
 
-      if (vr.type == MessageTypeEnum.Warning && !result.valid) {
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, vr.type)
-      }
-      if (vr.type == MessageTypeEnum.Success && result.valid) {
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, vr.type)
-      }
-      if (!multipleMessage && fieldState.messages.length) {
-        break
-      }
-    }
+          if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, vr.type)
+          }
+          if (vr.type == MessageTypeEnum.Success && result.valid) {
+            fieldState.messages.push({ text: message, type: vr.type })
+            this._setStatus(key, vr.type)
+          }
+          if (!multipleMessage && fieldState.messages.length) {
+            break
+          }
+        }
 
-    this.states[key] = fieldState
-    return fieldState.valid
+        this.states[key] = fieldState
+        res(fieldState.valid)
+      } catch (error) {
+        rej(error)
+      }
+    })
   }
   validationMessages(field: string) {
+    const appService = IoC.DI().resolve<IAppService>(serviceMap.AppService.key)
+    const lang = appService.application.state.ui.culture.lang || 'en'
     if (this.states[field]?.state == StateEnum.invalid) {
-      return this.states[field] ? this.states[field]?.messages.filter(m => m.type == MessageTypeEnum.Error).map(m => m.text) || '' : this.fieldFallBack.messages
+      return this.states[field] ? this.states[field]?.messages.filter(m => m.type == MessageTypeEnum.Error).map(m => m.text[lang]) : []
     } else if (this.states[field]?.state == StateEnum.valid) {
-      return this.states[field] ? this.states[field]?.messages.filter(m => m.type == MessageTypeEnum.Success).map(m => m.text) || '' : this.fieldFallBack.messages
+      return this.states[field] ? this.states[field]?.messages.filter(m => m.type == MessageTypeEnum.Success).map(m => m.text[lang]) || '' : []
     }
-    return this.fieldFallBack.messages
+    return []
   }
   message(field: string, type?: MessageTypeEnum) {
-    return this.states[field] ? (type ? this.states[field]?.messages.filter(m => m.type == type) : this.states[field]?.messages || '') : this.fieldFallBack.messages
+    const appService = IoC.DI().resolve<IAppService>(serviceMap.AppService.key)
+    const lang = appService.application.state.ui.culture.lang || 'en'
+    return this.states[field]
+      ? type
+        ? this.states[field]?.messages.filter(m => m.type == type).map(m => ({ ...m, text: m.text[lang] }))
+        : this.states[field]?.messages.map(m => ({ ...m, text: m.text[lang] })) || ''
+      : []
   }
   state(field: string) {
     return this.states[field] ? this.states[field]?.state || this.fieldFallBack.state : this.fieldFallBack.state
@@ -134,11 +155,11 @@ class Fields extends FieldsBase {
   }
 }
 
-class ListFields extends FieldsBase {
-  private states: THashMap<IFieldValidationState>[] = []
+class ListFields extends FieldsBase implements IListFields {
+  private states: THashMap<TFieldValidationState>[] = []
   public statuses: { [key: string]: { hasError: boolean; hasSuccess: boolean; hasWarning: boolean } }[] = []
 
-  constructor(schema: RuleSchema) {
+  constructor(schema: TRuleSchema) {
     super(schema)
   }
 
@@ -148,24 +169,71 @@ class ListFields extends FieldsBase {
     if (messageType == MessageTypeEnum.Warning) this.statuses[index][key].hasWarning = true
   }
 
-  validate(data: THashMap<any>[], multipleMessage?: boolean): boolean {
-    let isValidArray = true
-    data.forEach((obj, index) => {
-      const states: THashMap<IFieldValidationState> = {}
-      this.statuses[index] = {}
+  validate(data: THashMap<any>[], multipleMessage?: boolean): Promise<boolean> {
+    return new Promise((res, rej) => {
+      try {
+        let isValidArray = true
+        data.forEach((obj, index) => {
+          const states: THashMap<TFieldValidationState> = {}
+          this.statuses[index] = {}
 
-      for (const key in this.schema) {
-        this.statuses[index][key] = { hasError: false, hasSuccess: false, hasWarning: false }
-        const fieldState: IFieldValidationState = {
+          for (const key in this.schema) {
+            this.statuses[index][key] = { hasError: false, hasSuccess: false, hasWarning: false }
+            const fieldState: TFieldValidationState = {
+              state: StateEnum.valid,
+              valid: true,
+              messages: []
+            }
+            const rules = this.schema[key].sort((a, b) => a.type - b.type)
+
+            for (let idx = 0; idx < rules.length; idx++) {
+              const vr = rules[idx]
+              const result: TValidationResult = vr.rule(this._getDeepValue(obj, key), obj, index)
+              const message = vr.message || result.message
+              if (!result.valid && vr.type == MessageTypeEnum.Error) {
+                fieldState.valid = false
+                fieldState.state = StateEnum.invalid
+                fieldState.messages.push({ text: message, type: vr.type })
+                this._setStatus(key, index, vr.type)
+              }
+
+              if (vr.type == MessageTypeEnum.Warning && !result.valid) {
+                fieldState.messages.push({ text: message, type: vr.type })
+                this._setStatus(key, index, vr.type)
+              }
+              if (vr.type == MessageTypeEnum.Success && result.valid) {
+                fieldState.messages.push({ text: message, type: vr.type })
+                this._setStatus(key, index, vr.type)
+              }
+              if (!multipleMessage && fieldState.messages.length) {
+                break
+              }
+            }
+            states[key] = fieldState
+          }
+          this.states[index] = states
+        })
+
+        res(isValidArray)
+      } catch (error) {
+        rej(error)
+      }
+    })
+  }
+
+  track(key: string, index: number, data: THashMap<any>, multipleMessage?: boolean): Promise<boolean> {
+    return new Promise((res, rej) => {
+      try {
+        const fieldState: TFieldValidationState = {
           state: StateEnum.valid,
           valid: true,
           messages: []
         }
-        const result: IValidationResult = this._getDeepValue(obj, key)
         const rules = this.schema[key].sort((a, b) => a.type - b.type)
-
+        this.statuses[index] = { [key]: { hasError: false, hasSuccess: false, hasWarning: false } }
         for (let idx = 0; idx < rules.length; idx++) {
           const vr = rules[idx]
+          const result: TValidationResult = vr.rule(this._getDeepValue(data[index], key), data)
           const message = vr.message || result.message
           if (!result.valid && vr.type == MessageTypeEnum.Error) {
             fieldState.valid = false
@@ -186,64 +254,43 @@ class ListFields extends FieldsBase {
             break
           }
         }
-        states[key] = fieldState
+        if (!this.states[index]?.[key]) this.states[index] = {}
+        this.states[index][key] = fieldState
+        res(fieldState.valid)
+      } catch (error) {
+        rej(error)
       }
-      this.states[index] = states
     })
-
-    return isValidArray
-  }
-
-  track(key: string, index: number, data: THashMap<any>, multipleMessage?: boolean): boolean {
-    const fieldState: IFieldValidationState = {
-      state: StateEnum.valid,
-      valid: true,
-      messages: []
-    }
-
-    const rules = this.schema[key].sort((a, b) => a.type - b.type)
-
-    for (let idx = 0; idx < rules.length; idx++) {
-      const vr = rules[idx]
-      const result: IValidationResult = vr.rule(this._getDeepValue(data[index], key), data, this)
-      const message = vr.message || result.message
-      if (!result.valid && vr.type == MessageTypeEnum.Error) {
-        fieldState.valid = false
-        fieldState.state = StateEnum.invalid
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, index, vr.type)
-      }
-
-      if (vr.type == MessageTypeEnum.Warning && !result.valid) {
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, index, vr.type)
-      }
-      if (vr.type == MessageTypeEnum.Success && result.valid) {
-        fieldState.messages.push({ text: message, type: vr.type })
-        this._setStatus(key, index, vr.type)
-      }
-      if (!multipleMessage && fieldState.messages.length) {
-        break
-      }
-    }
-    this.states[index][key] = fieldState
-
-    return fieldState.valid
   }
   validationMessages(field: string, index: number) {
+    const appService = IoC.DI().resolve<IAppService>(serviceMap.AppService.key)
+    const lang = appService.application.state.ui.culture.lang || 'en'
     if (this.states[index]?.[field]?.state == StateEnum.invalid) {
-      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Error).map(m => m.text) || '' : this.fieldFallBack.messages
+      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Error).map(m => m.text?.[lang]) : []
     } else if (this.states[index]?.[field]?.state == StateEnum.valid) {
-      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Success).map(m => m.text) || '' : this.fieldFallBack.messages
+      return this.states[index]?.[field] ? this.states[index][field]?.messages.filter(m => m.type == MessageTypeEnum.Success).map(m => m.text?.[lang]) : []
     }
-    return this.fieldFallBack.messages
+    return []
   }
-  message(field: string, index: number, type?: MessageTypeEnum) {
-    return this.states[index]?.[field] ? (type ? this.states[index][field]?.messages.filter(m => m.type == type) : this.states[index][field]?.messages || '') : this.fieldFallBack.messages
+  message(
+    field: string,
+    index: number,
+    type?: MessageTypeEnum
+  ): {
+    text: string
+    type: MessageTypeEnum
+  }[] {
+    const appService = IoC.DI().resolve<IAppService>(serviceMap.AppService.key)
+    const lang = appService.application.state.ui.culture.lang || 'en'
+    return this.states[index]?.[field]
+      ? type
+        ? this.states[index][field]?.messages.filter(m => m.type == type).map(m => ({ ...m, text: m.text?.[lang] }))
+        : this.states[index][field]?.messages.map(m => ({ ...m, text: m.text?.[lang] })) || ''
+      : []
   }
 
   state(field: string, index: number) {
-    return this.states.length && this.states[index]?.[field] ? this.states[index][field]?.state || StateEnum.unset : this.fieldFallBack.state
+    return this.states[index]?.[field]?.state || this.fieldFallBack.state
   }
 
   reset(field: string, index: number): void {
